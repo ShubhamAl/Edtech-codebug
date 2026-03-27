@@ -1,68 +1,80 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Sparkles, Building2, GraduationCap } from "lucide-react";
+import { ArrowRight, Sparkles, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function CTA() {
-  return (
-    <section className="w-full py-32 bg-white relative overflow-hidden">
-      {/* Dynamic Background Accents */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#63D2F3]/10 blur-[120px] rounded-full pointer-events-none" />
+  // Neubrutalism Style Variables
+  const blackBorder = "border-[3px] border-black";
+  const hardShadow = "shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]";
+  const hoverEffect = "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-150";
 
-      <div className="max-w-5xl mx-auto px-6 relative z-10">
+  return (
+    <section className="w-full py-32 bg-[#F9F4F1] relative overflow-hidden">
+      {/* Dynamic Background Accents - Shapes from the design */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className={`absolute -bottom-20 -left-20 w-64 h-64 bg-[#FF6AC1] ${blackBorder} rounded-full opacity-20 rotate-12`} />
+        <div className={`absolute -top-20 -right-20 w-80 h-80 bg-[#FFD600] ${blackBorder} rounded-full opacity-20 -rotate-12`} />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="bg-white border-2 border-slate-50 rounded-[4rem] p-12 md:p-20 text-center relative overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.06)]"
+          className={`bg-white ${blackBorder} rounded-[3rem] md:rounded-[4rem] p-12 md:p-24 text-center relative overflow-hidden ${hardShadow}`}
         >
           {/* Top Badge */}
           <div className="flex justify-center mb-10">
-            <div className="inline-flex items-center gap-3 px-5 py-2 bg-white border border-slate-100 rounded-2xl shadow-sm">
-              <Sparkles size={16} className="text-[#63D2F3]" />
-              <span className="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">Join the Ecosystem</span>
+            <div className={`inline-flex items-center gap-3 px-6 py-2.5 bg-white ${blackBorder} rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+              <Sparkles size={18} className="text-[#8E97FD]" strokeWidth={3} />
+              <span className="text-[11px] font-black text-black uppercase tracking-[0.3em]">Join the Ecosystem</span>
             </div>
           </div>
 
-          <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-8 leading-[0.9]">
+          <h2 className="text-6xl md:text-8xl font-black text-black tracking-tighter mb-8 leading-[0.85]">
             Access the <br />
-            <span className="text-[#63D2F3]">Campus++ Portal.</span>
+            <span className="relative inline-block mt-2">
+              Campus++ Portal.
+              <div className="absolute -bottom-2 left-0 w-full h-4 bg-[#A3E635] -z-10 -rotate-1" />
+            </span>
           </h2>
 
-          <p className="mt-6 text-slate-400 font-bold text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-8 text-black font-bold text-xl md:text-2xl max-w-2xl mx-auto leading-tight opacity-70">
             Campus++ now supports institute operations only.
             Use faculty/admin access to manage students, risk, and interventions.
           </p>
 
-          {/* Action Buttons */}
-          <div className="mt-14 flex flex-col md:flex-row items-center justify-center gap-6">
+          {/* Action Buttons - Reverted to your logic with new styling */}
+          <div className="mt-16 flex flex-col md:flex-row items-center justify-center gap-8">
             <Link
               href="/institute-login"
-              className="group w-full md:w-auto inline-flex items-center justify-center gap-3 bg-[#63D2F3] text-white px-10 py-6 rounded-[2rem] font-black text-sm uppercase tracking-[0.2em] shadow-[0_8px_0_0_#48BBDB] hover:translate-y-[2px] hover:shadow-[0_6px_0_0_#48BBDB] active:translate-y-[8px] active:shadow-none transition-all"
+              className={`group w-full md:w-auto inline-flex items-center justify-center gap-4 bg-[#8E97FD] text-black px-12 py-6 rounded-full font-black text-base uppercase tracking-widest ${blackBorder} ${hardShadow} ${hoverEffect}`}
             >
-              <Building2 size={20} strokeWidth={2.5} />
-              Faculty/Admin Login
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" strokeWidth={3} />
+              <Building2 size={24} strokeWidth={3} />
+              Faculty Login
+              <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-2" strokeWidth={3} />
             </Link>
 
             <Link
               href="/institute-register"
-              className="group w-full md:w-auto inline-flex items-center justify-center gap-3 bg-white border-2 border-slate-100 text-slate-800 px-10 py-6 rounded-[2rem] font-black text-sm uppercase tracking-[0.2em] hover:bg-slate-50 transition-all"
+              className={`group w-full md:w-auto inline-flex items-center justify-center gap-4 bg-[#FFD600] text-black px-12 py-6 rounded-full font-black text-base uppercase tracking-widest ${blackBorder} ${hardShadow} ${hoverEffect}`}
             >
-              <Sparkles size={20} className="text-[#63D2F3]" strokeWidth={2.5} />
+              <Sparkles size={24} className="text-black" strokeWidth={3} />
               Register Institute
             </Link>
           </div>
 
           {/* Verification Note */}
-          <div className="mt-10 flex items-center justify-center gap-2 text-slate-300">
-            <span className="text-[9px] font-black uppercase tracking-[0.4em]">Official Academic Gateway</span>
+          <div className="mt-12 flex items-center justify-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-[#A3E635] border border-black animate-pulse" />
+            <span className="text-[11px] font-black uppercase tracking-[0.5em] text-black opacity-40">Official Academic Gateway</span>
           </div>
 
           {/* Decorative Corner Glows */}
-          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#D6BCFA]/10 blur-3xl rounded-full" />
-          <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#63D2F3]/10 blur-3xl rounded-full" />
+          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-[#8E97FD]/10 blur-[100px] rounded-full" />
+          <div className="absolute -top-20 -left-20 w-60 h-60 bg-[#FF6AC1]/10 blur-[100px] rounded-full" />
         </motion.div>
       </div>
     </section>

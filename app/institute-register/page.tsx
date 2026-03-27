@@ -11,8 +11,10 @@ import {
   User,
   Zap,
   School,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function InstituteRegisterPage() {
   const router = useRouter();
@@ -24,6 +26,11 @@ export default function InstituteRegisterPage() {
     instituteName: "",
   });
   const [loading, setLoading] = useState(false);
+
+  // Neubrutalism Style Variables
+  const blackBorder = "border-[3px] border-black";
+  const hardShadow = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]";
+  const hoverEffect = "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-100";
 
   const handleRegister = async () => {
     const { name, email, password, instituteName } = form;
@@ -47,31 +54,17 @@ export default function InstituteRegisterPage() {
         }),
       });
 
-      /**
-       * EXPECTED RESPONSE:
-       * {
-       *   token: "...",
-       *   user: {
-       *     name,
-       *     email,
-       *     role: "admin",
-       *     instituteId
-       *   }
-       * }
-       */
-
-      // 🔐 Store auth data
       setToken(res.token);
       localStorage.setItem("user_name", res.user?.name || name);
       localStorage.setItem("user_email", res.user?.email || email);
       localStorage.setItem("user_role", (res.user?.role || "admin").toLowerCase());
       localStorage.setItem("institute_id", res.user?.instituteId || "");
+
       sessionStorage.setItem("user_name", res.user?.name || name);
       sessionStorage.setItem("user_email", res.user?.email || email);
       sessionStorage.setItem("user_role", (res.user?.role || "admin").toLowerCase());
       sessionStorage.setItem("institute_id", res.user?.instituteId || "");
 
-      // 🚀 Go to admin dashboard
       router.push("/admin");
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "Institute registration failed");
@@ -80,114 +73,146 @@ export default function InstituteRegisterPage() {
     }
   };
 
-  const inputClass =
-    "w-full bg-slate-50 border-2 border-transparent rounded-2xl py-4 pl-14 pr-6 focus:outline-none focus:border-[#63D2F3]/20 focus:bg-white transition-all font-bold text-slate-700 placeholder:text-slate-300";
-
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Background accents */}
-      <div className="absolute -top-20 -left-20 w-80 h-80 bg-[#63D2F3]/10 rounded-full blur-[100px]" />
-      <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-[#D6BCFA]/10 rounded-full blur-[100px]" />
+    <div className="min-h-screen bg-[#F9F4F1] flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Decor Shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute -top-20 -left-20 w-64 h-64 bg-[#A3E635] ${blackBorder} rounded-full opacity-20 rotate-12`} />
+        <div className={`absolute -bottom-20 -right-20 w-80 h-80 bg-[#8E97FD] ${blackBorder} rounded-full opacity-20 -rotate-12`} />
+      </div>
 
-      <div className="w-full max-w-[420px] z-10">
-        {/* Header */}
-        <div className="flex flex-col items-center space-y-6 mb-10">
-          <div className="w-20 h-20 bg-[#63D2F3] rounded-[2.2rem] flex items-center justify-center shadow-[0_8px_0_0_#48BBDB]">
-            <Building2 className="text-white w-12 h-12" />
+      <div className="w-full max-w-[460px] z-10">
+        {/* Header Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center space-y-6 mb-10"
+        >
+          <div className={`w-20 h-20 bg-[#A3E635] rounded-2xl ${blackBorder} flex items-center justify-center ${hardShadow} rotate-3`}>
+            <Building2 className="text-black w-10 h-10" strokeWidth={2.5} />
           </div>
           <div className="text-center space-y-2">
-            <h1 className="text-4xl font-black tracking-tighter text-slate-800 uppercase">
-              Institute <span className="text-[#63D2F3]">Register</span>
+            <h1 className="text-5xl font-black tracking-tighter text-black uppercase leading-none">
+              Institute <span className="text-[#A3E635]">Register</span>
             </h1>
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
-              Create Institute Admin Account
-            </p>
+            <div className="relative inline-block mt-1">
+              <span className="text-[10px] font-black text-black uppercase tracking-widest bg-[#8E97FD] px-3 py-1 border-2 border-black text-white">
+                Create Admin Account
+              </span>
+            </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Toggle Nav */}
-        <div className="flex bg-slate-100/80 p-1.5 rounded-2xl mb-8 border border-slate-100 shadow-sm">
-          <Link href="/institute-login" className="flex-1 text-center py-3 rounded-xl text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-all">
-            Faculty Login
+        {/* Toggle Nav Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`flex bg-white ${blackBorder} p-1.5 rounded-2xl mb-8 ${hardShadow}`}
+        >
+          <Link href="/institute-login" className="flex-1 text-center py-3 rounded-xl text-[10px] font-black uppercase text-black/40 hover:text-black hover:bg-[#F9F4F1] transition-all">
+            Faculty
           </Link>
-          <Link href="/admin-login" className="flex-1 text-center py-3 rounded-xl text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-all">
-            Admin Login
+          <Link href="/admin-login" className="flex-1 text-center py-3 rounded-xl text-[10px] font-black uppercase text-black/40 hover:text-black hover:bg-[#F9F4F1] transition-all">
+            Admin
           </Link>
-          <div className="flex-1 text-center py-3 bg-white rounded-xl shadow-sm text-[10px] font-black uppercase text-[#63D2F3] cursor-default">
+          <div className="flex-1 text-center py-3 bg-[#A3E635] border-2 border-black rounded-xl text-[10px] font-black uppercase text-black cursor-default">
             Register
           </div>
-        </div>
+        </motion.div>
 
-        {/* Card */}
-        <div className="bg-white border-2 border-slate-50 p-10 rounded-[3rem] shadow-xl space-y-6">
+        {/* Registration Form Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`bg-white ${blackBorder} p-8 md:p-10 rounded-[2.5rem] ${hardShadow} space-y-6`}
+        >
           {/* Admin Name */}
-          <div className="relative">
-            <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" />
-            <input
-              placeholder="Admin Name"
-              value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
-              className={inputClass}
-            />
+          <div className="space-y-2">
+            <div className="relative group">
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-black" size={20} strokeWidth={3} />
+              <input
+                placeholder="Admin Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className={`w-full bg-[#F9F4F1] ${blackBorder} rounded-2xl py-4 pl-12 pr-4 font-bold text-black placeholder:text-black/30 outline-none focus:bg-white transition-all`}
+              />
+            </div>
           </div>
 
           {/* Institute Name */}
-          <div className="relative">
-            <School className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" />
-            <input
-              placeholder="Institute Name"
-              value={form.instituteName}
-              onChange={(e) =>
-                setForm({ ...form, instituteName: e.target.value })
-              }
-              className={inputClass}
-            />
+          <div className="space-y-2">
+            <div className="relative group">
+              <School className="absolute left-4 top-1/2 -translate-y-1/2 text-black" size={20} strokeWidth={3} />
+              <input
+                placeholder="Institute Name"
+                value={form.instituteName}
+                onChange={(e) => setForm({ ...form, instituteName: e.target.value })}
+                className={`w-full bg-[#F9F4F1] ${blackBorder} rounded-2xl py-4 pl-12 pr-4 font-bold text-black placeholder:text-black/30 outline-none focus:bg-white transition-all`}
+              />
+            </div>
           </div>
 
           {/* Email */}
-          <div className="relative">
-            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" />
-            <input
-              type="email"
-              placeholder="Admin Email"
-              value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
-              className={inputClass}
-            />
+          <div className="space-y-2">
+            <div className="relative group">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-black" size={20} strokeWidth={3} />
+              <input
+                type="email"
+                placeholder="Admin Email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className={`w-full bg-[#F9F4F1] ${blackBorder} rounded-2xl py-4 pl-12 pr-4 font-bold text-black placeholder:text-black/30 outline-none focus:bg-white transition-all`}
+              />
+            </div>
           </div>
 
           {/* Password */}
-          <div className="relative">
-            <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" />
-            <input
-              type="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={(e) =>
-                setForm({ ...form, password: e.target.value })
-              }
-              className={inputClass}
-            />
+          <div className="space-y-2">
+            <div className="relative group">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-black" size={20} strokeWidth={3} />
+              <input
+                type="password"
+                placeholder="Security Password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                className={`w-full bg-[#F9F4F1] ${blackBorder} rounded-2xl py-4 pl-12 pr-4 font-bold text-black placeholder:text-black/30 outline-none focus:bg-white transition-all`}
+              />
+            </div>
           </div>
 
-          {/* Button */}
-          <button
+          {/* Register Button */}
+          <motion.button
             onClick={handleRegister}
             disabled={loading}
-            className="w-full bg-[#63D2F3] text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-[0_6px_0_0_#48BBDB] flex items-center justify-center gap-3 disabled:opacity-50"
+            className={`w-full relative bg-[#A3E635] text-black py-5 rounded-2xl font-black uppercase tracking-widest text-sm ${blackBorder} ${hardShadow} ${hoverEffect} flex items-center justify-center gap-3 disabled:opacity-50 mt-4`}
           >
-            {loading ? "Creating..." : "Create Institute"}
-            {!loading && <Zap size={16} />}
-          </button>
+            {loading ? (
+              <>
+                <div className="h-5 w-5 border-4 border-black border-t-transparent rounded-full animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                Create Institute
+                <Zap size={18} strokeWidth={3} fill="currentColor" />
+              </>
+            )}
+          </motion.button>
+        </motion.div>
 
-        </div>
+        {/* Back Navigation */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mt-8 flex justify-center"
+        >
+          <Link href="/" className="flex items-center gap-2 text-[11px] font-black text-black uppercase tracking-widest hover:translate-x-1 transition-transform">
+            Back to main portal <ArrowRight size={14} strokeWidth={3} />
+          </Link>
+        </motion.div>
 
-        <p className="mt-10 text-center text-[9px] font-black text-slate-300 uppercase tracking-[0.4em]">
-          Authorized Institutions Only
+        <p className="mt-8 text-center text-[10px] font-black text-black/30 uppercase tracking-[0.4em]">
+          Authorized Academic Onboarding v2.0
         </p>
       </div>
     </div>

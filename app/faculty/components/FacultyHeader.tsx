@@ -30,6 +30,10 @@ export default function FacultyHeader({ onOpenSidebar }: FacultyHeaderProps) {
   const profileRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
+  // Neubrutalism Style Variables
+  const blackBorder = "border-[3px] border-black dark:border-white";
+  const hardShadow = "shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]";
+
   useEffect(() => {
     setMounted(true);
     const storedName = localStorage.getItem("user_name");
@@ -52,14 +56,15 @@ export default function FacultyHeader({ onOpenSidebar }: FacultyHeaderProps) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full px-6 py-4 transition-all duration-500">
+    <header className="sticky top-0 z-50 w-full px-6 py-4 transition-all duration-500 pointer-events-none">
       <div
         className={`
-          mx-auto max-w-7xl flex items-center justify-between px-6 py-2.5
-          rounded-2xl border transition-all duration-500 ease-out
+          mx-auto max-w-7xl flex items-center justify-between px-6 py-3
+          rounded-2xl transition-all duration-500 ease-out pointer-events-auto
+          ${blackBorder} ${hardShadow}
           ${scrolled
-            ? "bg-white/40 dark:bg-zinc-950/40 backdrop-blur-2xl border-white/40 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] scale-[0.98]"
-            : "bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-slate-200 dark:border-zinc-800 shadow-sm"
+            ? "bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl scale-[0.98]"
+            : "bg-[#F9F4F1] dark:bg-zinc-900"
           }
         `}
       >
@@ -67,87 +72,83 @@ export default function FacultyHeader({ onOpenSidebar }: FacultyHeaderProps) {
         <div className="flex items-center gap-5">
           <button
             onClick={onOpenSidebar}
-            className="lg:hidden p-2.5 rounded-xl bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md transition-all active:scale-90"
+            className={`lg:hidden p-2.5 rounded-xl bg-[#A3E635] ${blackBorder} shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all`}
           >
-            <Menu className="w-5 h-5 text-slate-600 dark:text-zinc-300" strokeWidth={2} />
+            <Menu className="w-5 h-5 text-black" strokeWidth={3} />
           </button>
 
-          <div className="relative group">
-            <h1 className="text-lg font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <span className="bg-gradient-to-r from-[#63D2F3] to-[#4A90E2] bg-clip-text text-transparent">
-                FACULTY
-              </span>
-              <span className="opacity-40 font-light">/</span>
-              <span className="text-[11px] tracking-[0.3em] font-bold opacity-70">HUB</span>
+          <div className="relative group flex items-center gap-2">
+            <h1 className="text-xl font-black tracking-tighter text-black dark:text-white uppercase">
+              FACULTY HUB
             </h1>
-            <div className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#63D2F3] transition-all group-hover:w-full" />
+            <div className="h-2 w-2 rounded-full bg-[#A3E635] border-2 border-black dark:border-white" />
           </div>
         </div>
 
         {/* RIGHT SECTION */}
         <div className="flex items-center gap-4">
-          {/* Neon Theme Toggle */}
+          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="relative p-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors group"
+            className={`p-2.5 rounded-xl bg-white dark:bg-zinc-800 ${blackBorder} hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] group`}
           >
             {mounted && (theme === "dark" ? (
-              <Sun size={18} className="text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)] transition-transform group-hover:rotate-90" />
+              <Sun size={18} className="text-yellow-400 group-hover:rotate-90 transition-transform" strokeWidth={3} />
             ) : (
-              <Moon size={18} className="text-slate-500 transition-transform group-hover:-rotate-12" />
+              <Moon size={18} className="text-black group-hover:-rotate-12 transition-transform" strokeWidth={3} />
             ))}
           </button>
 
-          {/* Cyber Profile Button */}
+          {/* Profile Button */}
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="group flex items-center gap-3 p-1 pr-4 rounded-xl bg-slate-900 dark:bg-white transition-all hover:ring-4 hover:ring-[#63D2F3]/20"
+              className={`group flex items-center gap-3 p-1.5 pr-4 rounded-xl bg-black dark:bg-white ${blackBorder} transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}
             >
-              <div className="h-9 w-9 bg-[#63D2F3] rounded-lg flex items-center justify-center text-slate-900 shadow-inner">
-                <UserCircle className="w-6 h-6" strokeWidth={2} />
+              <div className={`h-9 w-9 bg-[#8E97FD] rounded-lg ${blackBorder} flex items-center justify-center text-black`}>
+                <UserCircle className="w-6 h-6" strokeWidth={3} />
               </div>
 
               <div className="hidden md:flex flex-col items-start leading-none">
-                <span className="text-[10px] font-black text-white dark:text-slate-900 uppercase tracking-tighter">
-                  {name}
+                <span className="text-[11px] font-black text-white dark:text-black uppercase tracking-tight">
+                  {name.split(' ')[0]}
                 </span>
-                <span className="text-[8px] font-bold text-[#63D2F3] dark:text-slate-500 uppercase mt-0.5">Verified</span>
+                <span className="text-[9px] font-black text-[#A3E635] dark:text-[#8E97FD] uppercase mt-0.5">Verified</span>
               </div>
 
-              <ChevronDown className={`w-3.5 h-3.5 ml-1 transition-transform duration-500 ${isProfileOpen ? 'rotate-180 text-[#63D2F3]' : 'text-slate-400'}`} />
+              <ChevronDown className={`w-4 h-4 ml-1 transition-transform duration-500 ${isProfileOpen ? 'rotate-180 text-[#A3E635]' : 'text-white dark:text-black'}`} strokeWidth={4} />
             </button>
 
             <AnimatePresence>
               {isProfileOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  initial={{ opacity: 0, y: 15, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute right-0 mt-4 w-64 origin-top-right bg-white/90 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.2)] border border-slate-100 dark:border-zinc-800 p-2 z-50"
+                  exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                  className={`absolute right-0 mt-4 w-64 origin-top-right bg-white dark:bg-zinc-900 rounded-2xl ${blackBorder} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-3 z-50`}
                 >
-                  <div className="flex items-center gap-3 p-3 mb-2 bg-slate-50 dark:bg-zinc-800/50 rounded-xl">
-                    <div className="h-10 w-10 rounded-lg bg-[#63D2F3]/20 flex items-center justify-center">
-                      <ShieldCheck className="w-5 h-5 text-[#63D2F3]" />
+                  <div className={`flex items-center gap-3 p-3 mb-3 bg-[#F9F4F1] dark:bg-zinc-800 rounded-xl ${blackBorder}`}>
+                    <div className="h-10 w-10 rounded-lg bg-[#8E97FD] border-2 border-black flex items-center justify-center">
+                      <ShieldCheck className="w-6 h-6 text-black" strokeWidth={3} />
                     </div>
                     <div className="flex flex-col overflow-hidden">
-                      <p className="text-[11px] font-black text-slate-800 dark:text-white truncate uppercase">{name}</p>
-                      <p className="text-[9px] font-medium text-slate-400 dark:text-zinc-500">Faculty Member</p>
+                      <p className="text-[12px] font-black text-black dark:text-white truncate uppercase">{name}</p>
+                      <p className="text-[10px] font-bold text-black/40 dark:text-white/40 uppercase">Faculty Node</p>
                     </div>
                   </div>
 
-                  <Link href="/faculty/profile">
-                    <button className="w-full flex items-center gap-3 p-3 rounded-xl text-[10px] font-black uppercase text-slate-600 dark:text-zinc-400 hover:bg-[#63D2F3] hover:text-white dark:hover:text-slate-900 transition-all group">
-                      <Settings className="w-4 h-4 transition-transform group-hover:rotate-45" strokeWidth={2.5} />
+                  <Link href="/faculty/profile" className="block">
+                    <button className="w-full flex items-center gap-3 p-3 rounded-xl text-[11px] font-black uppercase text-black dark:text-white hover:bg-[#FFD600] hover:text-black transition-all border-2 border-transparent hover:border-black group">
+                      <Settings className="w-4 h-4 transition-transform group-hover:rotate-45" strokeWidth={3} />
                       Account Settings
                     </button>
                   </Link>
 
                   <button
                     onClick={logout}
-                    className="w-full mt-1 flex items-center gap-3 p-3 rounded-xl text-[10px] font-black uppercase text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm hover:shadow-rose-500/20"
+                    className="w-full mt-2 flex items-center gap-3 p-3 rounded-xl text-[11px] font-black uppercase bg-[#FF6AC1] text-black border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all"
                   >
-                    <LogOut className="w-4 h-4" strokeWidth={2.5} />
+                    <LogOut className="w-4 h-4" strokeWidth={3} />
                     Secure Sign Out
                   </button>
                 </motion.div>

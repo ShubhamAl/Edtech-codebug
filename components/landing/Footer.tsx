@@ -5,72 +5,82 @@ import { GraduationCap, Github, Twitter, Linkedin, Mail, ArrowUpRight } from "lu
 import { motion } from "framer-motion";
 
 export default function Footer() {
-  return (
-    <footer className="w-full bg-[#F8FAFC] relative overflow-hidden">
-      {/* Decorative Top Border Gradient */}
-      <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#63D2F3]/20 to-transparent" />
+  // Neubrutalism Style Variables
+  const blackBorder = "border-[3px] border-black";
+  const hardShadow = "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]";
 
-      <div className="max-w-7xl mx-auto px-8 pt-24 pb-12">
+  return (
+    <footer className="w-full bg-[#F9F4F1] border-t-[3px] border-black relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute inset-0 pointer-events-none opacity-10">
+        <div className={`absolute -bottom-10 -left-10 w-40 h-40 bg-[#FF6AC1] ${blackBorder} rounded-full rotate-12`} />
+      </div>
+
+      <div className="max-w-[1440px] mx-auto px-8 pt-24 pb-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
 
           {/* Brand & Mission Column */}
-          <div className="lg:col-span-4 space-y-8">
-            <div className="flex items-center gap-3 group cursor-pointer">
-              <div className="h-10 w-10 bg-[#63D2F3] rounded-[1rem] shadow-[0_4px_0_0_#48BBDB] flex items-center justify-center transition-transform group-hover:rotate-6">
-                <GraduationCap className="text-white w-6 h-6" strokeWidth={2.5} />
+          <div className="lg:col-span-4 space-y-10">
+            <div className="flex items-center gap-4 group cursor-pointer">
+              <div className={`h-12 w-12 bg-[#8E97FD] rounded-2xl ${blackBorder} ${hardShadow} flex items-center justify-center transition-transform group-hover:rotate-6`}>
+                <GraduationCap className="text-black w-7 h-7" strokeWidth={3} />
               </div>
-              <span className="font-black tracking-tighter text-slate-800 text-2xl uppercase">
+              <span className="font-black tracking-tighter text-black text-3xl uppercase">
                 Campus++
               </span>
             </div>
-            <p className="max-w-xs text-[13px] font-bold text-slate-400 leading-relaxed uppercase tracking-wider">
+
+            <p className="max-w-xs text-sm font-bold text-black leading-tight uppercase tracking-wider opacity-60">
               Empowering the next generation of professionals with high-intelligence career tools and AI roadmaps.
             </p>
-            <div className="flex gap-3">
+
+            <div className="flex gap-4">
               {[Github, Twitter, Linkedin].map((Icon, i) => (
                 <motion.a
                   key={i}
                   href="#"
-                  whileHover={{ y: -4 }}
-                  className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#63D2F3] transition-all shadow-sm hover:shadow-md"
+                  whileHover={{ y: -4, x: -2 }}
+                  className={`w-12 h-12 rounded-xl bg-white ${blackBorder} flex items-center justify-center text-black hover:bg-[#FFD600] transition-all ${hardShadow} hover:shadow-none`}
                 >
-                  <Icon size={18} />
+                  <Icon size={20} strokeWidth={2.5} />
                 </motion.a>
               ))}
             </div>
           </div>
 
           {/* Links Sections */}
-          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-12">
-            <div className="space-y-6">
-              <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.25em]">Portals</h4>
-              <ul className="space-y-4">
-                <FooterLink href="/institute-login" label="Faculty/Admin Portal" />
+          <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
+            <div className="space-y-8">
+              <h4 className="text-[12px] font-black text-black uppercase tracking-[0.3em] bg-[#A3E635] inline-block px-2 py-1 border-2 border-black">Portals</h4>
+              <ul className="space-y-5">
+                <FooterLink href="/institute-login" label="Faculty Portal" />
                 <FooterLink href="/institute-register" label="Register Institute" />
-                <FooterLink href="/faculty" label="Faculty Dashboard" />
+                <FooterLink href="/faculty" label="Admin Dashboard" />
               </ul>
             </div>
 
-            <div className="space-y-6">
-              <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.25em]">Company</h4>
-              <ul className="space-y-4">
+            <div className="space-y-8">
+              <h4 className="text-[12px] font-black text-black uppercase tracking-[0.3em] bg-[#63D2F3] inline-block px-2 py-1 border-2 border-black">Company</h4>
+              <ul className="space-y-5">
                 <FooterLink href="#" label="Our Vision" />
                 <FooterLink href="#" label="Privacy Policy" />
                 <FooterLink href="#" label="Terms of Service" />
               </ul>
             </div>
 
-            <div className="space-y-6 col-span-2 md:col-span-1">
-              <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.25em]">Support</h4>
-              <div className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm space-y-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase leading-relaxed">
+            <div className="space-y-8 col-span-1">
+              <h4 className="text-[12px] font-black text-black uppercase tracking-[0.3em] bg-[#FF6AC1] inline-block px-2 py-1 border-2 border-black">Support</h4>
+              <div className={`bg-white ${blackBorder} p-6 rounded-[2rem] ${hardShadow} space-y-5`}>
+                <p className="text-[11px] font-black text-black uppercase leading-tight opacity-50">
                   Have a question or need assistance?
                 </p>
                 <a
                   href="mailto:support@campuspp.com"
-                  className="flex items-center gap-2 text-[10px] font-black text-[#63D2F3] uppercase tracking-widest hover:underline"
+                  className="flex items-center gap-2 text-[11px] font-black text-black uppercase tracking-widest hover:text-[#8E97FD] transition-colors"
                 >
-                  <Mail size={14} />
+                  <div className={`p-2 bg-[#FFD600] ${blackBorder} rounded-lg`}>
+                    <Mail size={16} strokeWidth={3} />
+                  </div>
                   Contact Support
                 </a>
               </div>
@@ -79,21 +89,21 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-10 border-t border-slate-200/50 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-4">
-            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
+        <div className="pt-10 border-t-[3px] border-black flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            <p className="text-[11px] font-black text-black uppercase tracking-[0.4em]">
               © 2026 Campus++ Core
             </p>
-            <div className="h-1 w-1 bg-slate-200 rounded-full" />
-            <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
-              v1.0.4
+            <div className="h-4 w-[2px] bg-black hidden md:block" />
+            <p className="text-[11px] font-black text-black uppercase tracking-widest opacity-40">
+              STABLE BUILD v1.0.4
             </p>
           </div>
 
           <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Systems Operational</span>
+            <div className={`flex items-center gap-3 px-4 py-2 bg-white ${blackBorder} rounded-full`}>
+              <div className="w-2.5 h-2.5 bg-[#A3E635] rounded-full border border-black animate-pulse" />
+              <span className="text-[10px] font-black text-black uppercase tracking-widest">Systems Operational</span>
             </div>
           </div>
         </div>
@@ -107,10 +117,10 @@ function FooterLink({ href, label }: { href: string; label: string }) {
     <li>
       <Link
         href={href}
-        className="group flex items-center gap-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-900 transition-all"
+        className="group flex items-center gap-2 text-[13px] font-black text-black uppercase tracking-wider hover:translate-x-1 transition-all"
       >
-        <span className="group-hover:mr-1 transition-all">{label}</span>
-        <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-all text-[#63D2F3]" />
+        <span className="opacity-60 group-hover:opacity-100 transition-opacity">{label}</span>
+        <ArrowUpRight size={16} className="opacity-0 group-hover:opacity-100 transition-all text-[#8E97FD]" strokeWidth={3} />
       </Link>
     </li>
   );

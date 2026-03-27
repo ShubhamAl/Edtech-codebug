@@ -7,8 +7,8 @@ import * as THREE from "three";
 
 function ParticleCloud() {
   const ref = useRef<THREE.Points>(null!);
-  
-  // Create points manually to ensure they exist without external helper issues
+
+  // Create points manually
   const [sphere] = useState(() => {
     const arr = new Float32Array(5000 * 3);
     for (let i = 0; i < 5000; i++) {
@@ -37,11 +37,12 @@ function ParticleCloud() {
       <Points ref={ref} positions={sphere} stride={3} frustumCulled={false}>
         <PointMaterial
           transparent
-          color="#63D2F3"
-          size={0.006}
+          // Updated to match the lavender/purple "Kristina" theme primary color
+          color="#8E97FD"
+          size={0.008}
           sizeAttenuation={true}
           depthWrite={false}
-          opacity={0.4} // Low opacity for a subtle "brain/neural" look
+          opacity={0.6} // Slightly higher opacity for neubrutalist punch
         />
       </Points>
     </group>
@@ -49,16 +50,29 @@ function ParticleCloud() {
 }
 
 export default function VisualElement() {
+  // Neubrutalism style variable
+  const blackBorder = "border-[3px] border-black";
+
   return (
-    // CRITICAL: The wrapper must be absolute and cover the background
-    <div className="absolute inset-0 -z-10 w-full h-full min-h-[600px]">
-      <Canvas 
-        camera={{ position: [0, 0, 1.2] }}
-        gl={{ antialias: true, alpha: true }} // Alpha true allows the background color to show through
+    // Updated wrapper to align with the soft beige background of the new theme
+    <div className="absolute inset-0 -z-10 w-full h-full min-h-[600px] bg-[#F9F4F1] overflow-hidden">
+
+      {/* Decorative "Sticker" shapes floating in the 3D space background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className={`absolute top-20 left-[10%] w-32 h-32 bg-[#FFD600] rounded-full ${blackBorder} opacity-20 rotate-12`} />
+        <div className={`absolute bottom-20 right-[10%] w-48 h-48 bg-[#FF6AC1] rounded-full ${blackBorder} opacity-10 -rotate-12`} />
+      </div>
+
+      <Canvas
+        camera={{ position: [0, 0, 1.5] }} // Pushed camera back slightly for full-width feel
+        gl={{ antialias: true, alpha: true }}
       >
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={0.8} />
         <ParticleCloud />
       </Canvas>
+
+      {/* Subtle overlay to ensure text remains readable over the particles */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F9F4F1]/40 to-[#F9F4F1]" />
     </div>
   );
 }

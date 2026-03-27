@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { GraduationCap, ChevronDown, Building2, UserCircle, Zap, Menu, X, PlusCircle } from "lucide-react";
+import { GraduationCap, ChevronDown, Building2, Menu, X, PlusCircle, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
@@ -16,22 +16,24 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] px-4 md:px-8 py-6 pointer-events-none">
-      <div className={`
-        max-w-7xl mx-auto flex justify-between items-center px-6 py-3 md:py-4
-        rounded-[2rem] md:rounded-[2.5rem] transition-all duration-500 pointer-events-auto
-        ${scrolled
-          ? "bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.08)] border-2 border-white/50 dark:border-zinc-800/50"
-          : "bg-white dark:bg-zinc-900 border-2 border-slate-50 dark:border-zinc-800 shadow-sm"}
-      `}>
+  // Neubrutalism Style Variables
+  const blackBorder = "border-[2.5px] border-black";
+  const hardShadow = "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]";
+  const hoverEffect = "hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all duration-75";
 
-        {/* LEFT: BRAND */}
+  return (
+    <nav
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "bg-[#F9F4F1] border-b-[2.5px] border-black py-3" : "bg-transparent py-6"
+        }`}
+    >
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between">
+
+        {/* LEFT: BRAND (Updated to Match Design Aesthetic) */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="h-9 w-9 md:h-10 md:w-10 bg-[#63D2F3] rounded-xl shadow-[0_4px_0_0_#48BBDB] flex items-center justify-center rotate-3 group-hover:rotate-0 transition-all duration-300">
-            <GraduationCap className="text-white w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
+          <div className={`h-10 w-10 bg-[#8E97FD] ${blackBorder} rounded-xl ${hardShadow} flex items-center justify-center rotate-3 group-hover:rotate-0 transition-all duration-300`}>
+            <GraduationCap className="text-black w-6 h-6" strokeWidth={2.5} />
           </div>
-          <span className="font-[1000] tracking-tighter text-slate-800 dark:text-white text-xl md:text-2xl uppercase">
+          <span className="font-black tracking-tighter text-black text-xl md:text-2xl uppercase">
             Campus ++
           </span>
         </Link>
@@ -43,9 +45,9 @@ export default function Navbar() {
             onMouseEnter={() => setIsLoginOpen(true)}
             onMouseLeave={() => setIsLoginOpen(false)}
           >
-            <button className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-zinc-500 hover:text-[#63D2F3] uppercase tracking-[0.25em] transition-colors py-2">
+            <button className="flex items-center gap-2 text-[15px] font-bold text-black hover:opacity-60 transition-opacity py-2">
               Institute
-              <ChevronDown size={14} className={`transition-transform duration-300 ${isLoginOpen ? "rotate-180" : ""}`} />
+              <ChevronDown size={16} className={`transition-transform duration-300 ${isLoginOpen ? "rotate-180" : ""}`} strokeWidth={3} />
             </button>
 
             <AnimatePresence>
@@ -54,7 +56,7 @@ export default function Navbar() {
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute right-0 mt-2 w-72 bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.1)] border-2 border-slate-50 dark:border-zinc-800 p-3"
+                  className={`absolute right-0 mt-2 w-72 bg-white ${blackBorder} rounded-[2rem] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-3`}
                 >
                   <InstituteOptions />
                 </motion.div>
@@ -64,18 +66,21 @@ export default function Navbar() {
 
           <Link
             href="/institute-login"
-            className="bg-[#63D2F3] text-white px-8 py-3.5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-[0_5px_0_0_#48BBDB] hover:translate-y-[2px] hover:shadow-[0_3px_0_0_#48BBDB] active:translate-y-[5px] active:shadow-none transition-all flex items-center gap-2"
+            className={`bg-[#8E97FD] text-black px-8 py-2.5 rounded-full font-black text-sm ${blackBorder} ${hardShadow} ${hoverEffect} flex items-center gap-2`}
           >
-            Faculty/Admin Login <Zap size={14} className="fill-current" />
+            Faculty/Admin Login
+            <div className="bg-black rounded-full p-1">
+              <ArrowUpRight size={14} className="text-white" />
+            </div>
           </Link>
         </div>
 
         {/* MOBILE TOGGLE */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2.5 bg-slate-50 dark:bg-zinc-800 rounded-xl text-slate-600 dark:text-zinc-400"
+          className={`md:hidden p-2.5 bg-[#FFD600] rounded-xl ${blackBorder} ${hardShadow}`}
         >
-          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          {mobileMenuOpen ? <X size={22} strokeWidth={3} /> : <Menu size={22} strokeWidth={3} />}
         </button>
       </div>
 
@@ -83,24 +88,24 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden absolute top-[100px] left-4 right-4 bg-white dark:bg-zinc-900 border-2 border-slate-50 dark:border-zinc-800 rounded-[2.5rem] p-4 shadow-2xl pointer-events-auto"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="md:hidden absolute top-24 left-4 right-4 bg-white border-[3px] border-black p-6 rounded-[2.5rem] shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]"
           >
-            <div className="space-y-4">
+            <div className="space-y-6">
               <Link
                 href="/institute-login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center w-full bg-[#63D2F3] text-white py-5 rounded-[1.8rem] font-black text-[10px] uppercase tracking-widest shadow-[0_6px_0_0_#48BBDB]"
+                className={`flex items-center justify-center w-full bg-[#8E97FD] text-black py-4 rounded-2xl font-black text-sm uppercase ${blackBorder} ${hardShadow}`}
               >
-                Faculty/Admin Login <Zap size={14} className="ml-2 fill-current" />
+                Faculty/Admin Login <ArrowUpRight size={18} className="ml-2" />
               </Link>
 
-              <div className="h-px bg-slate-100 dark:bg-zinc-800 mx-4" />
+              <div className="h-[2px] bg-black/10 mx-4" />
 
               <div className="px-2">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Institute Portals</p>
+                <p className="text-[10px] font-black text-black/40 uppercase tracking-widest mb-4 ml-2">Institute Portals</p>
                 <InstituteOptions onAction={() => setMobileMenuOpen(false)} />
               </div>
             </div>
@@ -112,37 +117,37 @@ export default function Navbar() {
 }
 
 function InstituteOptions({ onAction }: { onAction?: () => void }) {
+  const blackBorder = "border-[2.5px] border-black";
+
   return (
-    <div className="space-y-1">
-      {/* INSTITUTE LOGIN */}
+    <div className="space-y-2">
       <Link
         href="/institute-login"
         onClick={onAction}
-        className="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-[1.8rem] transition-all group"
+        className="flex items-center gap-4 p-4 hover:bg-[#F9F4F1] rounded-2xl transition-all group"
       >
-        <div className="w-11 h-11 bg-slate-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 dark:group-hover:bg-white dark:group-hover:text-slate-900 transition-all">
+        <div className={`w-11 h-11 bg-white ${blackBorder} rounded-xl flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-all`}>
           <Building2 size={22} strokeWidth={2.5} />
         </div>
         <div>
-          <p className="text-[9px] font-black text-slate-300 dark:text-zinc-600 uppercase tracking-widest leading-none mb-1">Organization</p>
-          <p className="text-sm font-black text-slate-700 dark:text-zinc-200 tracking-tight">Login Portal</p>
+          <p className="text-[9px] font-black text-black/40 uppercase tracking-widest leading-none mb-1">Organization</p>
+          <p className="text-sm font-black text-black tracking-tight">Login Portal</p>
         </div>
       </Link>
 
-      <div className="h-px bg-slate-100 dark:bg-zinc-800 mx-4 my-2" />
+      <div className="h-[2px] bg-black/5 mx-4" />
 
-      {/* INSTITUTE REGISTER */}
       <Link
         href="/institute-register"
         onClick={onAction}
-        className="flex items-center gap-4 p-4 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-[1.8rem] transition-all group"
+        className="flex items-center gap-4 p-4 hover:bg-[#ecfdf5] rounded-2xl transition-all group"
       >
-        <div className="w-11 h-11 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 transition-all">
+        <div className={`w-11 h-11 bg-[#A3E635] ${blackBorder} rounded-xl flex items-center justify-center text-black transition-all`}>
           <PlusCircle size={22} strokeWidth={2.5} />
         </div>
         <div>
-          <p className="text-[9px] font-black text-emerald-600/50 uppercase tracking-widest leading-none mb-1">Partnership</p>
-          <p className="text-sm font-black text-emerald-600 dark:text-emerald-400 tracking-tight">Register Institute</p>
+          <p className="text-[9px] font-black text-black/40 uppercase tracking-widest leading-none mb-1">Partnership</p>
+          <p className="text-sm font-black text-black tracking-tight">Register Institute</p>
         </div>
       </Link>
     </div>

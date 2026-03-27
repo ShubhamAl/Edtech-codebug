@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useSpring } from "framer-motion";
-import { Cpu, Rocket, UserPlus, Sparkles } from "lucide-react";
+import { Cpu, Rocket, UserPlus, Sparkles, ChevronRight } from "lucide-react";
 import { useRef } from "react";
 
 export default function HowItWorks() {
@@ -17,27 +17,41 @@ export default function HowItWorks() {
     restDelta: 0.001,
   });
 
+  // Neubrutalism Style Variables
+  const blackBorder = "border-[3px] border-black";
+  const hardShadow = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]";
+
   return (
-    <section ref={containerRef} className="w-full py-32 bg-[#F8FAFC] relative overflow-hidden">
-      {/* Background Decor */}
+    <section ref={containerRef} className="w-full py-32 bg-[#F9F4F1] relative overflow-hidden">
+      {/* Background Decor - Playful Shapes */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#63D2F3]/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-[#D6BCFA]/5 rounded-full blur-[100px]" />
+        <div className={`absolute top-1/4 -left-20 w-64 h-64 bg-[#FF6AC1] ${blackBorder} rounded-full opacity-20 rotate-12`} />
+        <div className={`absolute bottom-1/4 -right-20 w-80 h-80 bg-[#FFD600] ${blackBorder} rounded-full opacity-20 -rotate-12`} />
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 relative z-10">
-        <div className="text-center mb-24 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-slate-100 rounded-full shadow-sm">
-            <Sparkles size={12} className="text-[#63D2F3]" />
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">The Roadmap</span>
-          </div>
-          <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter">
-            Three Step to <span className="text-[#63D2F3]">Mastery.</span>
+      <div className="max-w-[1440px] mx-auto px-6 relative z-10 flex flex-col items-center">
+        {/* SECTION HEADER */}
+        <div className="text-center mb-28 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className={`inline-flex items-center gap-3 px-6 py-2 bg-white ${blackBorder} rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+          >
+            <Sparkles size={16} className="text-[#8E97FD]" strokeWidth={3} />
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-black">The Roadmap</span>
+          </motion.div>
+
+          <h2 className="text-6xl md:text-8xl font-black text-black tracking-tighter leading-none">
+            Three Steps to <br />
+            <span className="relative inline-block mt-2">
+              Mastery.
+              <div className="absolute -bottom-2 left-0 w-full h-4 bg-[#A3E635] -z-10 -rotate-1" />
+            </span>
           </h2>
         </div>
 
-        <div className="relative">
-          {/* Animated Curly Path SVG */}
+        <div className="relative w-full max-w-5xl">
+          {/* Animated Curly Path SVG - Updated Colors */}
           <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-full hidden md:block h-full pointer-events-none">
             <svg
               viewBox="0 0 400 1000"
@@ -47,57 +61,47 @@ export default function HowItWorks() {
             >
               <motion.path
                 d="M 200 0 C 450 150, -50 350, 200 500 C 450 650, -50 850, 200 1000"
-                stroke="#63D2F3"
-                strokeWidth="4"
+                stroke="black"
+                strokeWidth="6"
                 strokeLinecap="round"
-                strokeDasharray="12 12"
+                strokeDasharray="16 16"
                 style={{ pathLength }}
-                className="opacity-20"
+                className="opacity-10"
               />
               <motion.path
                 d="M 200 0 C 450 150, -50 350, 200 500 C 450 650, -50 850, 200 1000"
-                stroke="url(#gradient)"
-                strokeWidth="4"
+                stroke="#8E97FD"
+                strokeWidth="6"
                 strokeLinecap="round"
                 style={{ pathLength }}
               />
-              <defs>
-                <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1000" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#63D2F3" />
-                  <stop offset="0.5" stopColor="#D6BCFA" />
-                  <stop offset="1" stopColor="#FED7E2" />
-                </linearGradient>
-              </defs>
             </svg>
           </div>
 
-          <div className="space-y-24 md:space-y-32">
+          <div className="space-y-32 md:space-y-48">
             <Step
               step="01"
               title="Onboarding"
               text="Create your digital profile and define your dream career goals. We set the foundation for your evolution."
-              icon={<UserPlus size={24} />}
+              icon={<UserPlus size={28} strokeWidth={3} />}
               align="left"
-              color="#63D2F3"
-              shadowColor="#48BBDB"
+              color="#FF6AC1"
             />
             <Step
               step="02"
               title="AI Analysis"
               text="Our engine generates a personalized learning roadmap based on industry gaps and your unique potential."
-              icon={<Cpu size={24} />}
+              icon={<Cpu size={28} strokeWidth={3} />}
               align="right"
-              color="#D6BCFA"
-              shadowColor="#9F7AEA"
+              color="#A3E635"
             />
             <Step
               step="03"
               title="Execution"
               text="Optimize your resume and skills with real-time AI mentoring. Forge your path to the top."
-              icon={<Rocket size={24} />}
+              icon={<Rocket size={28} strokeWidth={3} />}
               align="left"
-              color="#FED7E2"
-              shadowColor="#F687B3"
+              color="#8E97FD"
             />
           </div>
         </div>
@@ -106,38 +110,42 @@ export default function HowItWorks() {
   );
 }
 
-function Step({ step, title, text, icon, align, color, shadowColor }: any) {
+function Step({ step, title, text, icon, align, color }: any) {
+  const blackBorder = "border-[3px] border-black";
+  const hardShadow = "shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]";
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      whileInView={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, x: align === "left" ? -50 : 50 }}
+      whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      className={`flex flex-col md:flex-row items-center justify-between gap-12 ${align === "right" ? "md:flex-row-reverse" : ""
+      className={`flex flex-col md:flex-row items-center justify-between gap-12 w-full ${align === "right" ? "md:flex-row-reverse" : ""
         }`}
     >
       {/* Content Card */}
       <div className="w-full md:w-[45%] z-20">
-        <div className="group bg-white/70 backdrop-blur-md border-2 border-white p-10 rounded-[3rem] shadow-[0_20px_40px_rgba(0,0,0,0.02)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.05)] transition-all">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="px-3 py-1 bg-slate-50 rounded-lg text-[10px] font-black text-slate-300 tracking-[0.2em]">
-              {step}
+        <div className={`group bg-white ${blackBorder} p-10 rounded-[2.5rem] ${hardShadow} hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-150`}>
+          <div className="flex items-center gap-5 mb-6">
+            <div className={`px-4 py-1.5 bg-black rounded-full text-[12px] font-black text-white tracking-[0.2em]`}>
+              STEP {step}
             </div>
-            <h3 className="text-3xl font-black text-slate-800 tracking-tight group-hover:text-[#63D2F3] transition-colors">
+            <h3 className="text-4xl font-black text-black tracking-tight">
               {title}
             </h3>
           </div>
-          <p className="text-slate-400 font-bold text-base leading-relaxed">{text}</p>
+          <p className="text-black text-lg font-bold leading-tight opacity-70">{text}</p>
+
+          <div className="mt-8 flex items-center gap-2 text-black font-black text-sm uppercase tracking-widest group-hover:gap-4 transition-all">
+            Learn More <ChevronRight size={16} strokeWidth={4} />
+          </div>
         </div>
       </div>
 
       {/* Center Icon Block */}
       <div className="relative z-30">
         <div
-          style={{
-            backgroundColor: color,
-            boxShadow: `0 8px 0 0 ${shadowColor}`
-          }}
-          className="w-16 h-16 rounded-2xl flex items-center justify-center text-white transform rotate-12 hover:rotate-0 transition-transform duration-500 cursor-default"
+          className={`w-20 h-20 rounded-3xl ${blackBorder} shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center text-black transform rotate-12 hover:rotate-0 transition-transform duration-500 cursor-default`}
+          style={{ backgroundColor: color }}
         >
           {icon}
         </div>
