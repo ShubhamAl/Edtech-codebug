@@ -45,8 +45,8 @@ export default function RegistrationPipeline() {
 
   const instituteName = "My Institute";
   const instituteId = "INST001";
-  const API_AUTH_REGISTER = "https://techxpression-hackathon.onrender.com/api/auth/register";
-  const API_STUDENT_EXPORT = "https://techxpression-hackathon.onrender.com/api/faculty/students/export";
+  const API_AUTH_REGISTER = "https://campuspp-f7qx.onrender.com/api/auth/register";
+  const API_STUDENT_EXPORT = "https://campuspp-f7qx.onrender.com/api/faculty/students/export";
 
   const fetchExistingStudents = async () => {
     if (!token) {
