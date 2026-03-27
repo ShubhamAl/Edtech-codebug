@@ -771,11 +771,10 @@ export default function StudentDetailPage() {
                 </span>
               )}
               {perf.intervention.priority && (
-                <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase ${
-                  perf.intervention.priority === "high" ? "bg-[#E96D7C] text-white" :
-                  perf.intervention.priority === "medium" ? "bg-[#F5A623] text-white" :
-                  "bg-[#61C6EA]/10 text-[#61C6EA]"
-                }`}>
+                <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase ${perf.intervention.priority === "high" ? "bg-[#E96D7C] text-white" :
+                    perf.intervention.priority === "medium" ? "bg-[#F5A623] text-white" :
+                      "bg-[#61C6EA]/10 text-[#61C6EA]"
+                  }`}>
                   {perf.intervention.priority} Priority
                 </span>
               )}
@@ -808,11 +807,10 @@ export default function StudentDetailPage() {
                 <div key={action._id || idx} className={`p-4 ${BORDER} rounded-[1.5rem] bg-white/70 dark:bg-zinc-900/50`}>
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs font-black uppercase text-[#F5A623]">{action.type.replace(/_/g, " ")}</p>
-                    <span className={`text-[9px] font-black px-3 py-1 rounded-lg uppercase ${
-                      action.status === "completed" ? "bg-emerald-500/10 text-emerald-500" :
-                      action.status === "in_progress" ? "bg-[#61C6EA]/10 text-[#61C6EA]" :
-                      "bg-slate-100 dark:bg-zinc-800 text-[#8799B5]"
-                    }`}>
+                    <span className={`text-[9px] font-black px-3 py-1 rounded-lg uppercase ${action.status === "completed" ? "bg-emerald-500/10 text-emerald-500" :
+                        action.status === "in_progress" ? "bg-[#61C6EA]/10 text-[#61C6EA]" :
+                          "bg-slate-100 dark:bg-zinc-800 text-[#8799B5]"
+                      }`}>
                       {action.status}
                     </span>
                   </div>

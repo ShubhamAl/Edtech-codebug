@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import {
   Database, UploadCloud, FileSpreadsheet, Users, ArrowRight,
-  Loader2, X, Download, Lock, AlertCircle, CheckCircle2
+  Loader2, X, Download, Lock, AlertCircle, CheckCircle2, Zap
 } from "lucide-react";
 import Papa from "papaparse";
 import { getToken } from "@/lib/auth";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function RegistrationPipeline() {
-  // Matches the provided API JSON Structure
   interface Student {
     _id?: string;
     studentId: string;
@@ -31,9 +31,12 @@ export default function RegistrationPipeline() {
   const [fileName, setFileName] = useState("");
   const [isReady, setIsReady] = useState(false);
   const [responseMessage, setResponseMessage] = useState<any>(null);
-
-  // Auto-load Token
   const [token, setToken] = useState("");
+
+  // Neubrutalism Style Variables
+  const blackBorder = "border-[3px] border-black dark:border-white";
+  const hardShadow = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]";
+  const hoverEffect = "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-100";
 
   useEffect(() => {
     const stored = getToken();
@@ -41,18 +44,15 @@ export default function RegistrationPipeline() {
   }, []);
 
   const instituteName = "My Institute";
-  const instituteId = "INST001"; // Default based on JSON
-
+  const instituteId = "INST001";
   const API_AUTH_REGISTER = "https://techxpression-hackathon.onrender.com/api/auth/register";
   const API_STUDENT_EXPORT = "https://techxpression-hackathon.onrender.com/api/faculty/students/export";
 
-  // FIXED FETCH LOGIC
   const fetchExistingStudents = async () => {
     if (!token) {
       alert("Session expired or missing. Please login again.");
       return;
     }
-
     setLoading(true);
     try {
       const res = await fetch(API_STUDENT_EXPORT, {
@@ -60,30 +60,16 @@ export default function RegistrationPipeline() {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
-          "Accept": "application/json"
         },
       });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || `Server responded with ${res.status}`);
-      }
-
       const result = await res.json();
-
-      // JSON: { success: true, count: 12, data: [...] }
       const dataArray = result.data || result.students || [];
-
       if (Array.isArray(dataArray)) {
         setStudents(dataArray);
-        setFileName("Live Server Data");
+        setFileName("Live Server Cloud");
         setIsReady(true);
-        setResponseMessage(null);
-      } else {
-        throw new Error("API returned data in an unexpected format.");
       }
     } catch (err: any) {
-      console.error("Fetch Error:", err);
       alert(`Fetch Failed: ${err.message}`);
     } finally {
       setLoading(false);
@@ -95,7 +81,6 @@ export default function RegistrationPipeline() {
     if (!file) return;
     setFileName(file.name);
     setLoading(true);
-
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
@@ -107,7 +92,6 @@ export default function RegistrationPipeline() {
           dateOfJoin: row.dateOfJoin || row.DateOfJoin || new Date().toISOString().split('T')[0],
           classes: row.classes || row.Class || "SYIT",
           Course: row.Course || row.course || "Computer Science",
-          // Default fields for registration
           password: row.password || "student123",
           instituteName: instituteName,
           instituteId: instituteId
@@ -120,26 +104,20 @@ export default function RegistrationPipeline() {
   };
 
   const executeSync = async () => {
-    if (responseMessage) { // Reset for new batch
+    if (responseMessage) {
       setResponseMessage(null);
       setStudents([]);
       setFileName("");
       return;
     }
-
     try {
       setLoading(true);
-
-      // Sanitize students before sending (remove _id, __v if re-registering to avoid duplicates/errors)
-      // The register API likely expects new student objects
       const payloadStudents = students.map(({ _id, ...rest }) => ({
         ...rest,
-        // Ensure mandatory fields exist
         password: rest.password || "student123",
         instituteName: rest.instituteName || instituteName,
         instituteId: rest.instituteId || instituteId
       }));
-
       const res = await fetch(API_AUTH_REGISTER, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -149,168 +127,175 @@ export default function RegistrationPipeline() {
       setResponseMessage(data);
       if (res.ok) setIsReady(false);
     } catch (err) {
-      alert("Sync failed. Check console for details.");
+      alert("Sync failed.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] p-6 lg:p-12 font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300">
-      <div className="max-w-[1300px] mx-auto space-y-8">
+    <div className="min-h-screen bg-[#F9F4F1] dark:bg-zinc-950 p-6 md:p-12 transition-colors duration-300">
+      <div className="max-w-[1440px] mx-auto space-y-12">
 
         {/* HEADER */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 dark:border-slate-800 pb-8">
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-[#63D2F3] rounded-[1.8rem] flex items-center justify-center shadow-lg shadow-sky-100 dark:shadow-none">
-              <Database className="text-white w-7 h-7" />
-            </div>
-            <div>
-              <h1 className="text-5xl font-black tracking-tighter uppercase leading-none">
-                Student <span className="text-[#63D2F3]">Registration</span>
-              </h1>
-              <div className="flex items-center gap-3 mt-2">
-                <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">
-                  Portal • {instituteName}
-                </p>
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 bg-[#8E97FD] ${blackBorder} rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
+                <Database className="text-black w-6 h-6" strokeWidth={3} />
               </div>
+              <span className="text-[11px] font-black uppercase tracking-[0.4em] text-black/40 dark:text-white/40">
+                Nexus System / Data Node
+              </span>
             </div>
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-black dark:text-white leading-none p-2">
+              Student <br />
+              <span className="relative inline-block mt-2">
+                Registration.
+                <div className="absolute -bottom-2 left-0 w-full h-4 bg-[#A3E635] -z-10 -rotate-1" />
+              </span>
+            </h1>
           </div>
 
           <button
             onClick={fetchExistingStudents}
             disabled={loading}
-            className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-6 py-3 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm disabled:opacity-50"
+            className={`flex items-center gap-3 bg-white dark:bg-zinc-900 px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest ${blackBorder} ${hardShadow} ${hoverEffect} disabled:opacity-50`}
           >
-            {loading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} className="text-[#63D2F3]" />}
+            {loading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} className="text-[#8E97FD]" strokeWidth={3} />}
             Fetch Records
           </button>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
           {/* UPLOAD PANEL */}
           <div className="lg:col-span-4">
-            <div className={`relative min-h-[400px] rounded-[3.5rem] border-[3px] border-dashed transition-all duration-500 flex flex-col items-center justify-center p-10 text-center
-              ${isReady
-                ? 'bg-emerald-500 border-transparent shadow-2xl'
-                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-[#63D2F3]'}
-            `}>
+            <motion.div
+              animate={isReady ? { rotate: [0, -1, 1, 0] } : {}}
+              className={`relative min-h-[450px] rounded-[3rem] ${blackBorder} transition-all duration-300 flex flex-col items-center justify-center p-12 text-center
+                ${isReady
+                  ? 'bg-[#A3E635] shadow-none translate-x-[2px] translate-y-[2px]'
+                  : `bg-white dark:bg-zinc-900 ${hardShadow}`}
+              `}
+            >
               {!isReady ? (
                 <>
                   <input type="file" accept=".csv" onChange={handleFileUpload} className="absolute inset-0 opacity-0 cursor-pointer z-20" />
-                  <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800 rounded-[2.2rem] flex items-center justify-center mb-6">
-                    <UploadCloud size={48} className="text-[#63D2F3]" />
+                  <div className={`w-28 h-28 bg-[#F9F4F1] dark:bg-zinc-800 rounded-[2.5rem] ${blackBorder} flex items-center justify-center mb-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]`}>
+                    <UploadCloud size={48} className="text-[#8E97FD]" strokeWidth={3} />
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="font-black text-2xl uppercase tracking-tighter">Upload Manifest</h3>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest">Select .csv student file</p>
+                  <div className="space-y-3">
+                    <h3 className="font-black text-3xl uppercase tracking-tighter text-black dark:text-white">Upload Manifest</h3>
+                    <p className="text-[11px] text-black/40 dark:text-white/40 font-black uppercase tracking-[0.2em]">Select Student .CSV Source</p>
                   </div>
                 </>
               ) : (
-                <div className="text-white w-full space-y-8">
+                <div className="text-black w-full space-y-8">
                   <div className="flex justify-between items-start">
-                    <FileSpreadsheet size={64} className="opacity-50" />
-                    <button onClick={() => { setStudents([]); setIsReady(false); setFileName(""); }} className="bg-white/20 p-3 rounded-full hover:bg-white/30 transition-all">
-                      <X size={20} />
+                    <FileSpreadsheet size={64} strokeWidth={3} />
+                    <button onClick={() => { setStudents([]); setIsReady(false); setFileName(""); }} className={`bg-white p-3 rounded-xl ${blackBorder} hover:bg-[#FF6AC1] transition-colors`}>
+                      <X size={24} strokeWidth={3} />
                     </button>
                   </div>
-                  <div className="text-left">
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Source Loaded</p>
-                    <p className="text-2xl font-black truncate">{fileName}</p>
-                    <p className="text-sm font-bold mt-2">{students.length} students detected</p>
+                  <div className="text-left border-t-2 border-black pt-6">
+                    <p className="text-[11px] font-black uppercase tracking-widest opacity-40 mb-1">Source Uplinked</p>
+                    <p className="text-3xl font-black truncate leading-none uppercase">{fileName}</p>
+                    <div className="mt-6 inline-block bg-black text-white px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest">
+                      {students.length} Entities Detected
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
 
           {/* PREVIEW & RESPONSE PANEL */}
           <div className="lg:col-span-8">
-            <div className="bg-[#0F172A] dark:bg-slate-900/50 rounded-[3.5rem] p-10 min-h-[500px] shadow-2xl border border-transparent dark:border-slate-800 flex flex-col">
+            <div className={`bg-white dark:bg-zinc-900 rounded-[3rem] p-10 min-h-[550px] ${blackBorder} ${hardShadow} flex flex-col`}>
 
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4 text-white">
-                  <Users className="text-[#63D2F3]" />
-                  <h3 className="font-black uppercase tracking-widest text-sm">
-                    {responseMessage ? "Sync Summary" : "Data Preview"}
+              <div className="flex items-center justify-between mb-10">
+                <div className="flex items-center gap-4 text-black dark:text-white">
+                  <div className={`p-2 bg-[#FFD600] ${blackBorder} rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]`}>
+                    <Users size={20} strokeWidth={3} />
+                  </div>
+                  <h3 className="font-black uppercase tracking-[0.3em] text-sm">
+                    {responseMessage ? "Sync Summary" : "Pipeline Preview"}
                   </h3>
                 </div>
               </div>
 
-              <div className="flex-grow overflow-auto">
-                {responseMessage ? (
-                  /* SUCCESS VIEW */
-                  <div className="space-y-6">
-                    <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl flex items-center gap-4">
-                      <CheckCircle2 className="text-emerald-500" size={32} />
-                      <div>
-                        <p className="text-white font-black uppercase text-sm">{responseMessage.message}</p>
-                        <p className="text-emerald-500/80 text-xs font-bold">Assigned ID: {responseMessage.instituteId}</p>
+              <div className="flex-grow overflow-auto custom-scrollbar">
+                <AnimatePresence mode="wait">
+                  {responseMessage ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="space-y-8"
+                    >
+                      <div className={`p-8 bg-[#A3E635] ${blackBorder} rounded-[2rem] flex items-center gap-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]`}>
+                        <CheckCircle2 className="text-black" size={48} strokeWidth={3} />
+                        <div>
+                          <p className="text-black font-black uppercase text-xl leading-none mb-2">{responseMessage.message}</p>
+                          <p className="text-black/60 text-xs font-black uppercase tracking-widest">Master ID: {responseMessage.instituteId || "NEX-01"}</p>
+                        </div>
                       </div>
-                    </div>
-                    {/* (Stats and credential audit UI remains same as previous version) */}
-                  </div>
-                ) : students.length > 0 ? (
-                  <table className="w-full text-left">
-                    <thead className="sticky top-0 bg-[#0F172A] dark:bg-slate-900 border-b border-white/10 z-10">
-                      <tr className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                        <th className="pb-4">Student</th>
-                        <th className="pb-4">Course/Class</th>
-                        <th className="pb-4">Auth</th>
-                        <th className="pb-4 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {students.slice(0, 10).map((s, i) => (
-                        <tr key={i} className="text-white group">
-                          <td className="py-4">
-                            <p className="font-bold text-sm tracking-tight">{s.name}</p>
-                            <p className="text-[10px] text-slate-500 font-mono">{s.email}</p>
-                            <p className="text-[9px] text-[#63D2F3] font-mono mt-0.5">{s.studentId}</p>
-                          </td>
-                          <td className="py-4">
-                            <p className="text-[#63D2F3] text-xs font-black uppercase tracking-widest">{s.Course || "N/A"}</p>
-                            <p className="text-slate-500 text-[10px] font-bold italic">{s.classes || "N/A"}</p>
-                            <p className="text-[9px] text-slate-600 mt-0.5">Joined: {s.dateOfJoin?.split('T')[0]}</p>
-                          </td>
-                          <td className="py-4">
-                            <div className="flex items-center gap-2">
-                              <Lock size={10} className="text-slate-500" />
-                              <p className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded">
-                                {s.password || "••••••"}
-                              </p>
-                            </div>
-                          </td>
-                          <td className="py-4 text-right">
-                            <div className="inline-block w-2 h-2 rounded-full bg-[#63D2F3] shadow-[0_0_8px_#63D2F3]" />
-                          </td>
+                    </motion.div>
+                  ) : students.length > 0 ? (
+                    <table className="w-full text-left">
+                      <thead className="sticky top-0 bg-white dark:bg-zinc-900 border-b-[3px] border-black dark:border-white z-10">
+                        <tr className="text-[11px] font-black text-black/40 dark:text-white/40 uppercase tracking-[0.25em]">
+                          <th className="pb-6 px-4">Student Profile</th>
+                          <th className="pb-6 px-4">Cohort / Program</th>
+                          <th className="pb-6 px-4">Auth Key</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-600 space-y-4">
-                    <AlertCircle size={48} className="opacity-10" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">Waiting for data uplink...</p>
-                  </div>
-                )}
+                      </thead>
+                      <tbody className="divide-y-[2px] divide-black/5 dark:divide-white/5">
+                        {students.slice(0, 10).map((s, i) => (
+                          <tr key={i} className="text-black dark:text-white group">
+                            <td className="py-6 px-4">
+                              <p className="font-black text-base tracking-tight uppercase leading-none mb-1">{s.name}</p>
+                              <p className="text-[10px] text-black/40 dark:text-white/40 font-black uppercase tracking-widest">{s.email}</p>
+                            </td>
+                            <td className="py-6 px-4">
+                              <p className="text-[#8E97FD] text-xs font-black uppercase tracking-widest leading-none mb-1">{s.Course || "N/A"}</p>
+                              <p className="text-black/40 dark:text-white/40 text-[10px] font-black uppercase tracking-widest">{s.classes || "N/A"}</p>
+                            </td>
+                            <td className="py-6 px-4">
+                              <div className={`inline-flex items-center gap-3 bg-[#F9F4F1] dark:bg-zinc-800 px-4 py-2 rounded-xl ${blackBorder}`}>
+                                <Lock size={12} className="text-black/40 dark:text-white/40" strokeWidth={3} />
+                                <p className="text-[11px] font-black uppercase tracking-widest">
+                                  {s.password || "••••••"}
+                                </p>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center opacity-20">
+                      <AlertCircle size={80} strokeWidth={1} />
+                      <p className="text-sm font-black uppercase tracking-[0.5em] mt-6">Awaiting Data Uplink</p>
+                    </div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <div className="mt-8">
+              <div className="mt-10">
                 <button
                   disabled={(!isReady && !responseMessage) || loading}
                   onClick={executeSync}
-                  className={`w-full py-7 rounded-[2.5rem] font-black uppercase tracking-[0.4em] text-sm flex items-center justify-center gap-4 transition-all
+                  className={`w-full py-6 rounded-[2rem] font-black uppercase tracking-[0.3em] text-base flex items-center justify-center gap-4 transition-all ${blackBorder}
                     ${(isReady || responseMessage) && !loading
-                      ? 'bg-[#63D2F3] text-white shadow-[0_10px_0_0_#48BBDB] active:translate-y-1 active:shadow-none'
-                      : 'bg-slate-800 text-slate-600 cursor-not-allowed'}
+                      ? `bg-[#FFD600] text-black ${hardShadow} ${hoverEffect}`
+                      : 'bg-black/10 dark:bg-white/10 text-black/20 dark:text-white/20 cursor-not-allowed'}
                   `}
                 >
                   {loading ? <Loader2 className="animate-spin" /> : (
                     <>
-                      {responseMessage ? "Clear & Start New" : "Execute Registration"}
-                      <ArrowRight size={20} />
+                      {responseMessage ? "Clear & Re-initialize" : "Execute Registration"}
+                      <Zap size={20} fill="currentColor" />
                     </>
                   )}
                 </button>

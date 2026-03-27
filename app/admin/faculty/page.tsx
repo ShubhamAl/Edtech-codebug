@@ -42,6 +42,11 @@ export default function AdminFacultyPage() {
   const [search, setSearch] = useState("");
   const [toasts, setToasts] = useState<Toast[]>([]);
 
+  // Neubrutalism Style Variables
+  const blackBorder = "border-[3px] border-black dark:border-white";
+  const hardShadow = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]";
+  const hoverEffect = "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-100";
+
   // Create modal state
   const [showCreate, setShowCreate] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
@@ -144,23 +149,21 @@ export default function AdminFacultyPage() {
   };
 
   return (
-    <div className="space-y-8 pb-10 max-w-7xl mx-auto">
-      {/* TOAST */}
-      <div className="fixed top-6 right-6 z-[200] space-y-2 pointer-events-none">
+    <div className="w-full bg-[#F9F4F1] dark:bg-zinc-950 min-h-screen p-6 md:p-12 space-y-12 transition-colors duration-300">
+
+      {/* TOAST SYSTEM */}
+      <div className="fixed top-10 right-10 z-[250] space-y-4 pointer-events-none">
         <AnimatePresence>
           {toasts.map((t) => (
             <motion.div
               key={t.id}
-              initial={{ opacity: 0, x: 60 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 60 }}
-              className={`pointer-events-auto flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl font-bold text-sm ${
-                t.type === "success"
-                  ? "bg-emerald-500 text-white"
-                  : "bg-rose-500 text-white"
-              }`}
+              initial={{ opacity: 0, x: 100, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className={`pointer-events-auto flex items-center gap-4 px-6 py-4 rounded-2xl ${blackBorder} ${hardShadow} font-black text-xs uppercase tracking-widest ${t.type === "success" ? "bg-[#A3E635] text-black" : "bg-[#FF6AC1] text-black"
+                }`}
             >
-              {t.type === "success" ? <Check size={16} /> : <AlertTriangle size={16} />}
+              {t.type === "success" ? <Check size={20} strokeWidth={3} /> : <AlertTriangle size={20} strokeWidth={3} />}
               {t.message}
             </motion.div>
           ))}
@@ -168,94 +171,93 @@ export default function AdminFacultyPage() {
       </div>
 
       {/* PAGE HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-violet-500/20 rounded-lg">
-              <UserCog size={18} className="text-violet-500" />
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className={`p-2 bg-[#8E97FD] ${blackBorder} rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
+              <UserCog size={20} className="text-black" strokeWidth={3} />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-500">Admin / Faculty</span>
+            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-black/40 dark:text-white/40">Nexus / Personnel</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-[1000] tracking-tighter text-slate-900 dark:text-white uppercase">
-            Faculty <span className="text-violet-500">Management</span>
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-black dark:text-white uppercase leading-none p-2">
+            Faculty <br />
+            <span className="relative inline-block mt-2">
+              Management.
+              <div className="absolute -bottom-2 left-0 w-full h-4 bg-[#A3E635] -z-10 -rotate-1" />
+            </span>
           </h1>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">
-            Create, view and assign students to faculty members
-          </p>
         </div>
 
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-3 bg-violet-500 hover:bg-violet-600 text-white px-6 py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-lg shadow-violet-500/20"
+          className={`flex items-center gap-3 bg-[#FFD600] text-black px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest ${blackBorder} ${hardShadow} ${hoverEffect}`}
         >
-          <Plus size={16} strokeWidth={3} />
-          Add Faculty
+          <Plus size={20} strokeWidth={4} />
+          Add Faculty Member
         </button>
       </div>
 
       {/* ERROR */}
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500">
-          <AlertTriangle size={18} />
-          <p className="text-sm font-bold">{error}</p>
-          <button onClick={fetchFaculty} className="ml-auto text-xs font-black uppercase underline">
-            Retry
-          </button>
-        </div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`p-6 bg-[#FF6AC1] ${blackBorder} rounded-2xl flex items-center gap-4 text-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]`}>
+          <AlertTriangle size={24} strokeWidth={3} />
+          <p className="text-sm font-black uppercase">{error}</p>
+          <button onClick={fetchFaculty} className="ml-auto bg-black text-white px-4 py-2 rounded-lg text-xs font-black uppercase underline">Retry</button>
+        </motion.div>
       )}
 
       {/* SEARCH BAR */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+      <div className="relative group max-w-3xl">
+        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-black dark:text-white group-focus-within:text-[#8E97FD] transition-colors" size={20} strokeWidth={3} />
         <input
           type="text"
-          placeholder="Search faculty by name or email..."
+          placeholder="Scan personnel by name or nexus email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:ring-2 focus:ring-violet-500 transition-all outline-none dark:text-white shadow-sm"
+          className={`w-full bg-white dark:bg-zinc-900 ${blackBorder} rounded-[2rem] py-5 pl-16 pr-8 text-sm font-bold text-black dark:text-white outline-none focus:shadow-none transition-all ${hardShadow}`}
         />
       </div>
 
       {/* FACULTY LIST */}
       {loading ? (
-        <div className="flex items-center justify-center h-40 gap-3 text-slate-400">
-          <Loader2 className="animate-spin" size={24} />
-          <span className="text-sm font-bold">Loading faculty...</span>
+        <div className="flex flex-col items-center justify-center py-20 gap-4 text-black dark:text-white opacity-40">
+          <Loader2 className="animate-spin" size={48} strokeWidth={3} />
+          <span className="text-sm font-black uppercase tracking-[0.4em]">Syncing Personnel Data...</span>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-20 text-slate-400">
-          <UserCog size={48} className="mx-auto mb-4 opacity-30" />
-          <p className="font-bold">No faculty found.</p>
-          <p className="text-xs mt-1">Create your first faculty member above.</p>
+        <div className={`text-center py-32 bg-white dark:bg-zinc-900 rounded-[3rem] ${blackBorder} ${hardShadow}`}>
+          <UserCog size={80} className="mx-auto mb-6 opacity-10" strokeWidth={1} />
+          <p className="text-2xl font-black uppercase text-black dark:text-white">No Personnel Detected.</p>
+          <p className="text-xs font-bold uppercase tracking-widest mt-2 opacity-40">Initialize your first faculty member above.</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           {filtered.map((f, idx) => (
             <motion.div
               key={f._id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all"
+              className={`bg-white dark:bg-zinc-900 ${blackBorder} rounded-[2.5rem] p-8 ${hardShadow} ${hoverEffect}`}
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-violet-500/10 flex items-center justify-center shrink-0">
-                    <UserCog size={22} className="text-violet-500" />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="flex items-center gap-6">
+                  <div className={`h-16 w-16 rounded-[1.5rem] bg-[#8E97FD] ${blackBorder} flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+                    <UserCog size={32} className="text-black" strokeWidth={2.5} />
                   </div>
                   <div>
-                    <h3 className="font-black text-slate-800 dark:text-white text-sm uppercase tracking-tight">{f.name}</h3>
-                    <p className="text-[11px] font-bold text-slate-400 flex items-center gap-1.5 mt-0.5">
-                      <Mail size={10} /> {f.email}
+                    <h3 className="font-black text-black dark:text-white text-2xl uppercase tracking-tighter leading-none mb-1">{f.name}</h3>
+                    <p className="text-[11px] font-black text-black/40 dark:text-white/40 flex items-center gap-2 uppercase tracking-widest">
+                      <Mail size={12} strokeWidth={3} /> {f.email}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 flex-wrap">
-                  <div className="flex items-center gap-2 bg-slate-50 dark:bg-zinc-800 px-4 py-2 rounded-xl">
-                    <Users size={13} className="text-violet-500" />
-                    <span className="text-[10px] font-black text-slate-600 dark:text-zinc-300 uppercase">
-                      {f.studentCount ?? f.students?.length ?? 0} students
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className={`flex items-center gap-2 bg-[#F9F4F1] dark:bg-zinc-800 px-5 py-2.5 rounded-xl border-2 border-black dark:border-white`}>
+                    <Users size={16} className="text-[#8E97FD]" strokeWidth={3} />
+                    <span className="text-[11px] font-black text-black dark:text-white uppercase tracking-widest">
+                      {f.studentCount ?? f.students?.length ?? 0} Students
                     </span>
                   </div>
                   <button
@@ -263,36 +265,38 @@ export default function AdminFacultyPage() {
                       setAssignFaculty(f);
                       setSelectedStudentIds([]);
                     }}
-                    className="bg-violet-500 hover:bg-violet-600 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                    className={`bg-[#A3E635] text-black px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest ${blackBorder} shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all`}
                   >
-                    Assign Students
+                    Assign
                   </button>
                   <button
                     onClick={() => setExpandedFaculty(expandedFaculty === f._id ? null : f._id)}
-                    className="p-2 rounded-xl bg-slate-50 dark:bg-zinc-800 text-slate-400 hover:text-violet-500 transition-colors"
+                    className={`p-2.5 rounded-xl bg-white dark:bg-zinc-800 ${blackBorder} text-black dark:text-white hover:bg-[#FFD600] transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]`}
                   >
-                    {expandedFaculty === f._id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    {expandedFaculty === f._id ? <ChevronUp size={18} strokeWidth={3} /> : <ChevronDown size={18} strokeWidth={3} />}
                   </button>
                 </div>
               </div>
 
-              {/* Expanded detail */}
               <AnimatePresence>
                 {expandedFaculty === f._id && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-4 pt-4 border-t border-slate-100 dark:border-zinc-800"
+                    className="mt-8 pt-8 border-t-[3px] border-black/10 dark:border-white/10"
                   >
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
-                      Faculty ID: <span className="text-violet-500">{f._id}</span>
-                    </p>
-                    <p className="text-[10px] font-bold text-slate-400">
-                      {(f.studentCount ?? f.students?.length ?? 0) === 0
-                        ? "No students assigned yet."
-                        : `${f.studentCount ?? f.students?.length} student(s) currently assigned.`}
-                    </p>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-[#8E97FD] border border-black" />
+                        <p className="text-[10px] font-black text-black/40 dark:text-white/40 uppercase tracking-widest">
+                          UUID: <span className="text-black dark:text-white">{f._id}</span>
+                        </p>
+                      </div>
+                      <p className="text-sm font-black text-black dark:text-white uppercase">
+                        Status: <span className="text-[#A3E635]">Operational</span>
+                      </p>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -301,177 +305,158 @@ export default function AdminFacultyPage() {
         </div>
       )}
 
-      {/* CREATE FACULTY MODAL */}
+      {/* CREATE MODAL */}
       <AnimatePresence>
         {showCreate && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[150] flex items-center justify-center bg-zinc-950/60 backdrop-blur-md p-4"
-          >
+          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/60 backdrop-blur-md p-6">
             <motion.div
-              initial={{ scale: 0.95, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 w-full max-w-md shadow-2xl border border-slate-100 dark:border-zinc-800"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className={`bg-white dark:bg-zinc-900 rounded-[3rem] p-10 w-full max-w-xl ${blackBorder} ${hardShadow}`}
             >
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
-                    Create Faculty
-                  </h2>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                    Add a new faculty member
-                  </p>
+              <div className="flex items-center justify-between mb-10">
+                <div className="space-y-1">
+                  <h2 className="text-4xl font-black text-black dark:text-white uppercase tracking-tighter leading-none">Add Faculty</h2>
+                  <p className="text-[10px] font-black text-[#8E97FD] uppercase tracking-[0.3em]">Initialize Personnel Node</p>
                 </div>
-                <button
-                  onClick={() => { setShowCreate(false); setCreateError(""); }}
-                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                >
-                  <X size={20} className="text-slate-400" />
+                <button onClick={() => { setShowCreate(false); setCreateError(""); }} className={`p-3 rounded-xl bg-[#F9F4F1] dark:bg-zinc-800 ${blackBorder} hover:bg-[#FF6AC1] transition-colors`}>
+                  <X size={24} strokeWidth={3} />
                 </button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {[
                   { key: "name", label: "Full Name", type: "text", placeholder: "Dr. Jane Smith" },
-                  { key: "email", label: "Email Address", type: "email", placeholder: "jane@campus.edu" },
-                  { key: "password", label: "Password", type: "password", placeholder: "••••••••" },
+                  { key: "email", label: "Email Address", type: "email", placeholder: "jane@nexus.edu" },
+                  { key: "password", label: "Security Key", type: "password", placeholder: "••••••••" },
                 ].map((field) => (
-                  <div key={field.key}>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-zinc-400 mb-1.5 block">
+                  <div key={field.key} className="space-y-2">
+                    <label className="text-[11px] font-black uppercase tracking-widest text-black/40 dark:text-white/40 ml-1">
                       {field.label}
                     </label>
                     <input
                       type={field.type}
                       placeholder={field.placeholder}
                       value={(createForm as any)[field.key]}
-                      onChange={(e) =>
-                        setCreateForm((prev) => ({ ...prev, [field.key]: e.target.value }))
-                      }
-                      className="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-violet-500 dark:text-white transition-all"
+                      onChange={(e) => setCreateForm((prev) => ({ ...prev, [field.key]: e.target.value }))}
+                      className={`w-full bg-[#F9F4F1] dark:bg-zinc-950 ${blackBorder} rounded-2xl py-4 px-6 text-sm font-bold text-black dark:text-white outline-none focus:bg-white transition-all`}
                     />
                   </div>
                 ))}
 
                 {createError && (
-                  <p className="text-xs font-bold text-rose-500 flex items-center gap-2">
-                    <AlertTriangle size={14} /> {createError}
+                  <p className="text-xs font-black text-[#FF6AC1] uppercase flex items-center gap-2 mt-4">
+                    <AlertTriangle size={16} strokeWidth={3} /> {createError}
                   </p>
                 )}
 
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-4 pt-6">
                   <button
                     onClick={() => { setShowCreate(false); setCreateError(""); }}
-                    className="flex-1 py-3 rounded-xl border border-slate-200 dark:border-zinc-700 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all"
+                    className={`flex-1 py-5 rounded-2xl font-black uppercase text-xs tracking-widest border-2 border-black dark:border-white hover:bg-black/5 transition-all`}
                   >
-                    Cancel
+                    Abort
                   </button>
                   <button
                     onClick={handleCreate}
                     disabled={createLoading}
-                    className="flex-1 py-3 rounded-xl bg-violet-500 hover:bg-violet-600 text-white text-[11px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                    className={`flex-1 py-5 rounded-2xl bg-[#A3E635] text-black font-black uppercase text-xs tracking-widest ${blackBorder} shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] disabled:opacity-50 flex items-center justify-center gap-3`}
                   >
-                    {createLoading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                    {createLoading ? "Creating..." : "Create"}
+                    {createLoading ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} strokeWidth={4} />}
+                    Initialize
                   </button>
                 </div>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
-      {/* ASSIGN STUDENTS MODAL */}
+      {/* ASSIGN MODAL */}
       <AnimatePresence>
         {assignFaculty && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[150] flex items-center justify-center bg-zinc-950/60 backdrop-blur-md p-4"
-          >
+          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/60 backdrop-blur-md p-6">
             <motion.div
-              initial={{ scale: 0.95, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 w-full max-w-lg shadow-2xl border border-slate-100 dark:border-zinc-800 max-h-[80vh] flex flex-col"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className={`bg-white dark:bg-zinc-900 rounded-[3rem] p-10 w-full max-w-2xl ${blackBorder} ${hardShadow} max-h-[85vh] flex flex-col`}
             >
-              <div className="flex items-center justify-between mb-6 shrink-0">
-                <div>
-                  <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
-                    Assign Students
-                  </h2>
-                  <p className="text-[10px] font-bold text-violet-500 uppercase tracking-widest mt-1">
-                    To: {assignFaculty.name}
-                  </p>
+              <div className="flex items-center justify-between mb-8 shrink-0">
+                <div className="space-y-1">
+                  <h2 className="text-4xl font-black text-black dark:text-white uppercase tracking-tighter leading-none">Assign Cohort</h2>
+                  <p className="text-[10px] font-black text-[#8E97FD] uppercase tracking-[0.3em]">Linking Entities to: {assignFaculty.name}</p>
                 </div>
-                <button
-                  onClick={() => setAssignFaculty(null)}
-                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                >
-                  <X size={20} className="text-slate-400" />
+                <button onClick={() => setAssignFaculty(null)} className={`p-3 rounded-xl bg-[#F9F4F1] dark:bg-zinc-800 ${blackBorder} hover:bg-[#FF6AC1] transition-colors`}>
+                  <X size={24} strokeWidth={3} />
                 </button>
               </div>
 
               {students.length === 0 ? (
-                <div className="text-center py-10 text-slate-400">
-                  <Users size={40} className="mx-auto mb-3 opacity-30" />
-                  <p className="font-bold text-sm">No students available</p>
+                <div className="text-center py-20 opacity-20">
+                  <Users size={64} className="mx-auto mb-4" strokeWidth={1} />
+                  <p className="text-xl font-black uppercase tracking-widest">No entities available</p>
                 </div>
               ) : (
                 <>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 shrink-0">
-                    Select students ({selectedStudentIds.length} selected)
-                  </p>
-                  <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+                  <div className="flex justify-between items-center mb-6 px-1">
+                    <p className="text-[11px] font-black text-black/40 dark:text-white/40 uppercase tracking-widest">
+                      Available Student Directory
+                    </p>
+                    <div className="bg-black text-white px-3 py-1 rounded-md text-[10px] font-black">
+                      {selectedStudentIds.length} SELECTED
+                    </div>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto space-y-3 pr-4 custom-scrollbar">
                     {students.map((s) => {
                       const isSelected = selectedStudentIds.includes(s._id);
                       return (
                         <button
                           key={s._id}
                           onClick={() => toggleStudent(s._id)}
-                          className={`w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-left ${
-                            isSelected
-                              ? "border-violet-500 bg-violet-50 dark:bg-violet-950/30"
-                              : "border-slate-100 dark:border-zinc-800 hover:border-violet-200 dark:hover:border-zinc-700"
-                          }`}
+                          className={`w-full flex items-center justify-between p-5 rounded-2xl border-[3px] transition-all text-left ${isSelected
+                              ? "border-black bg-[#FFD600] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] translate-x-1"
+                              : "border-black/5 dark:border-white/5 bg-[#F9F4F1] dark:bg-zinc-800/50 hover:border-black"
+                            }`}
                         >
-                          <div className={`h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
-                            isSelected ? "bg-violet-500 border-violet-500" : "border-slate-300 dark:border-zinc-600"
-                          }`}>
-                            {isSelected && <Check size={12} className="text-white" strokeWidth={3} />}
+                          <div className="flex items-center gap-4">
+                            <div className={`h-6 w-6 rounded-lg border-[3px] border-black flex items-center justify-center shrink-0 transition-all ${isSelected ? "bg-black" : "bg-white"
+                              }`}>
+                              {isSelected && <Check size={16} className="text-[#A3E635]" strokeWidth={4} />}
+                            </div>
+                            <div>
+                              <p className="text-base font-black text-black dark:text-white uppercase leading-none mb-1">{s.name}</p>
+                              <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest">{s.studentId} • {s.email}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase">{s.name}</p>
-                            <p className="text-[9px] font-bold text-slate-400">{s.studentId} · {s.email}</p>
-                          </div>
+                          <Zap size={16} className={isSelected ? "text-black" : "opacity-5"} fill="currentColor" />
                         </button>
                       );
                     })}
                   </div>
 
-                  <div className="flex gap-3 pt-4 shrink-0">
+                  <div className="flex gap-4 pt-8 shrink-0">
                     <button
                       onClick={() => setAssignFaculty(null)}
-                      className="flex-1 py-3 rounded-xl border border-slate-200 dark:border-zinc-700 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all"
+                      className={`flex-1 py-5 rounded-2xl border-2 border-black dark:border-white font-black uppercase text-xs tracking-widest transition-all`}
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleAssign}
                       disabled={assignLoading || selectedStudentIds.length === 0}
-                      className="flex-1 py-3 rounded-xl bg-violet-500 hover:bg-violet-600 text-white text-[11px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                      className={`flex-1 py-5 rounded-2xl bg-[#8E97FD] text-black font-black uppercase text-xs tracking-widest ${blackBorder} shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] disabled:opacity-40 flex items-center justify-center gap-3 transition-all`}
                     >
-                      {assignLoading ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-                      {assignLoading ? "Assigning..." : `Assign ${selectedStudentIds.length}`}
+                      {assignLoading ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} strokeWidth={4} />}
+                      Link Entities
                     </button>
                   </div>
                 </>
               )}
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
