@@ -87,7 +87,7 @@ export default function FacultyDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-10 pb-16 px-6 pt-6 transition-colors duration-500">
-      
+
       {/* 1. TOP NAV / WELCOME */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div className="space-y-2">
@@ -105,46 +105,46 @@ export default function FacultyDashboard() {
         </div>
 
         <div className="hidden md:flex items-center gap-4 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-2 pr-6 rounded-2xl shadow-sm">
-           <div className="w-12 h-12 bg-emerald-500/10 flex items-center justify-center rounded-xl text-emerald-500">
-              <Activity size={20} />
-           </div>
-           <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">System Health</p>
-              <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase italic">Risk Engine Nominal</p>
-           </div>
+          <div className="w-12 h-12 bg-emerald-500/10 flex items-center justify-center rounded-xl text-emerald-500">
+            <Activity size={20} />
+          </div>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">System Health</p>
+            <p className="text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase italic">Risk Engine Nominal</p>
+          </div>
         </div>
       </div>
 
       {/* 2. CORE ANALYTICS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Total Cohort" 
-          value={stats?.totalStudents} 
-          icon={Users} 
-          color="bg-sky-500" 
-          sub="Active students" 
+        <StatCard
+          title="Total Cohort"
+          value={stats?.totalStudents}
+          icon={Users}
+          color="bg-sky-500"
+          sub="Active students"
         />
-        <StatCard 
-          title="Critical Risk" 
-          value={stats?.riskDistribution.High} 
-          icon={AlertTriangle} 
-          color="bg-rose-500" 
-          sub="Immediate action" 
-          alert 
+        <StatCard
+          title="Critical Risk"
+          value={stats?.riskDistribution.High}
+          icon={AlertTriangle}
+          color="bg-rose-500"
+          sub="Immediate action"
+          alert
         />
-        <StatCard 
-          title="At Risk" 
-          value={stats?.studentsAtRisk} 
-          icon={TrendingUp} 
-          color="bg-amber-500" 
-          sub="Pattern detected" 
+        <StatCard
+          title="At Risk"
+          value={stats?.studentsAtRisk}
+          icon={TrendingUp}
+          color="bg-amber-500"
+          sub="Pattern detected"
         />
-        <StatCard 
-          title="Daily Growth" 
-          value={`+${stats?.studentsJoinedToday || 0}`} 
-          icon={Zap} 
-          color="bg-[#D6BCFA]" 
-          sub="New enrollments" 
+        <StatCard
+          title="Daily Growth"
+          value={`+${stats?.studentsJoinedToday || 0}`}
+          icon={Zap}
+          color="bg-[#D6BCFA]"
+          sub="New enrollments"
         />
       </div>
 
@@ -217,15 +217,15 @@ export default function FacultyDashboard() {
 
       {/* 4. BENTO ACTIONS GRID */}
       <div className="grid lg:grid-cols-12 gap-8">
-        
+
         {/* BIG ACTION: UPLOAD */}
-        <motion.div 
+        <motion.div
           whileHover={{ y: -5 }}
           className="lg:col-span-8 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[3rem] p-10 relative overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none"
         >
           {/* Abstract Deco */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#63D2F3]/10 rounded-full blur-3xl" />
-          
+
           <div className="relative z-10 flex flex-col md:flex-row gap-10 items-center h-full">
             <div className="space-y-6 flex-1">
               <div className="p-4 bg-[#63D2F3] w-fit rounded-3xl shadow-lg shadow-sky-200 dark:shadow-none">
@@ -238,7 +238,7 @@ export default function FacultyDashboard() {
               <p className="text-slate-500 dark:text-zinc-400 font-bold text-sm max-w-sm">
                 Upload Attendance, Grades, and LMS logs to refresh the Predictive Risk Model.
               </p>
-              
+
               <Link href="/faculty/upload" className="block w-fit">
                 <button className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-xl active:scale-95">
                   Launch Ingestion Portal
@@ -248,9 +248,9 @@ export default function FacultyDashboard() {
             </div>
 
             <div className="hidden md:flex flex-col gap-3">
-               <ProcessStep icon={Activity} label="Logs" />
-               <ProcessStep icon={TrendingUp} label="Grades" />
-               <ProcessStep icon={Clock} label="Presence" />
+              <ProcessStep icon={Activity} label="Logs" />
+              <ProcessStep icon={TrendingUp} label="Grades" />
+              <ProcessStep icon={Clock} label="Presence" />
             </div>
           </div>
         </motion.div>
@@ -266,7 +266,7 @@ export default function FacultyDashboard() {
                 AI Insight
               </span>
             </div>
-            
+
             <div className="space-y-4">
               <h3 className="text-2xl font-black text-slate-900 dark:text-zinc-100 leading-tight">
                 {stats?.interventionsRequired} Interventions Required.
@@ -294,14 +294,14 @@ function StatCard({ title, value, icon: Icon, color, sub, alert }: any) {
   return (
     <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-8 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
       <div className={`absolute -right-4 -top-4 w-20 h-20 ${color} opacity-5 rounded-full group-hover:scale-150 transition-transform duration-700`} />
-      
+
       <div className="flex items-center gap-4 mb-4">
         <div className={`p-3 rounded-2xl ${color} text-white shadow-lg shadow-current/10`}>
           <Icon size={20} strokeWidth={2.5} />
         </div>
         <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.2em]">{title}</p>
       </div>
-      
+
       <div className="flex items-baseline gap-2">
         <h3 className={`text-4xl font-[1000] tracking-tighter ${alert ? 'text-rose-500' : 'text-slate-900 dark:text-zinc-100'}`}>
           {value || 0}

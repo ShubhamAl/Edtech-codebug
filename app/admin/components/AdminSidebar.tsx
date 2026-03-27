@@ -4,15 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  FileUp,
   Users,
   GraduationCap,
   X,
-  ChevronRight,
   LogOut,
-  UserCircle,
   ShieldCheck,
-  Zap
+  Zap,
+  UserCog,
+  BarChart3,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "@/lib/auth";
@@ -22,14 +21,14 @@ interface SidebarProps {
   setIsOpen: (open: boolean) => void;
 }
 
-export default function FacultySidebar({ isOpen, setIsOpen }: SidebarProps) {
+export default function AdminSidebar({ isOpen, setIsOpen }: SidebarProps) {
   const pathname = usePathname();
 
   const menuItems = [
-    { name: "Dashboard", href: "/faculty", icon: LayoutDashboard },
-    { name: "Upload Data", href: "/faculty/upload", icon: FileUp },
-    { name: "Student Directory", href: "/faculty/students", icon: Users },
-    { name: "Faculty Profile", href: "/faculty/profile", icon: UserCircle },
+    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Faculty", href: "/admin/faculty", icon: UserCog },
+    { name: "Students", href: "/admin/students", icon: Users },
+    { name: "Insights", href: "/admin/insights", icon: BarChart3 },
   ];
 
   const handleSignOut = () => {
@@ -67,16 +66,16 @@ export default function FacultySidebar({ isOpen, setIsOpen }: SidebarProps) {
         <div className="flex items-center justify-between mb-12 px-2 shrink-0">
           <div className="flex items-center gap-3 group cursor-default">
             <div className="relative">
-              <div className="absolute inset-0 bg-[#63D2F3] blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
+              <div className="absolute inset-0 bg-violet-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
               <div className="relative h-10 w-10 bg-slate-900 dark:bg-white rounded-xl flex items-center justify-center rotate-3 group-hover:rotate-12 transition-transform duration-300 shadow-xl">
-                <GraduationCap className="text-[#63D2F3] dark:text-slate-900 w-6 h-6" strokeWidth={2} />
+                <GraduationCap className="text-violet-400 dark:text-slate-900 w-6 h-6" strokeWidth={2} />
               </div>
             </div>
             <div className="flex flex-col">
               <span className="font-black tracking-tighter text-slate-900 dark:text-white text-xl uppercase leading-none">
-                CAMPUS<span className="text-[#63D2F3]">++</span>
+                CAMPUS<span className="text-violet-500">++</span>
               </span>
-              <span className="text-[8px] font-bold text-slate-400 dark:text-zinc-500 tracking-[0.3em] uppercase mt-1">Faculty Suite</span>
+              <span className="text-[8px] font-bold text-slate-400 dark:text-zinc-500 tracking-[0.3em] uppercase mt-1">Admin Console</span>
             </div>
           </div>
           <button onClick={() => setIsOpen(false)} className="lg:hidden p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
@@ -84,8 +83,14 @@ export default function FacultySidebar({ isOpen, setIsOpen }: SidebarProps) {
           </button>
         </div>
 
+        {/* ROLE BADGE */}
+        <div className="mb-6 mx-2 flex items-center gap-2 bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/50 rounded-2xl px-4 py-2.5">
+          <ShieldCheck size={14} className="text-violet-500" />
+          <span className="text-[9px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-[0.3em]">Master Admin</span>
+        </div>
+
         {/* NAVIGATION */}
-        <nav className="flex-1 space-y-1.5 overflow-y-auto custom-scrollbar pr-1">
+        <nav className="flex-1 space-y-1.5 overflow-y-auto pr-1">
           <div className="flex items-center gap-2 px-4 mb-6">
             <div className="h-[1px] flex-1 bg-slate-100 dark:bg-zinc-800" />
             <p className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.2em] whitespace-nowrap">
@@ -95,7 +100,7 @@ export default function FacultySidebar({ isOpen, setIsOpen }: SidebarProps) {
           </div>
 
           {menuItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
             return (
               <Link key={item.name} href={item.href} onClick={() => setIsOpen(false)}>
                 <div className={`
@@ -104,16 +109,15 @@ export default function FacultySidebar({ isOpen, setIsOpen }: SidebarProps) {
                     ? "bg-slate-900 dark:bg-white shadow-[0_10px_20px_rgba(0,0,0,0.1)]"
                     : "hover:bg-slate-100 dark:hover:bg-zinc-900/50"}
                 `}>
-                  {/* Active Indicator Glow */}
                   {isActive && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#63D2F3]/20 to-transparent opacity-50" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500/20 to-transparent opacity-50" />
                   )}
 
                   <div className="flex items-center gap-4 relative z-10">
                     <div className={`
                       p-2 rounded-lg transition-all duration-300
                       ${isActive
-                        ? "text-[#63D2F3] scale-110"
+                        ? "text-violet-400 scale-110"
                         : "text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white group-hover:scale-110"}
                     `}>
                       <item.icon className="w-[18px] h-[18px]" strokeWidth={isActive ? 2.5 : 2} />
@@ -127,8 +131,8 @@ export default function FacultySidebar({ isOpen, setIsOpen }: SidebarProps) {
                   </div>
 
                   {isActive && (
-                    <motion.div layoutId="activeArrow" className="relative z-10">
-                      <Zap className="w-3.5 h-3.5 text-[#63D2F3] fill-[#63D2F3]" />
+                    <motion.div layoutId="adminActiveArrow" className="relative z-10">
+                      <Zap className="w-3.5 h-3.5 text-violet-400 fill-violet-400" />
                     </motion.div>
                   )}
                 </div>
@@ -137,27 +141,27 @@ export default function FacultySidebar({ isOpen, setIsOpen }: SidebarProps) {
           })}
         </nav>
 
-        {/* PROFILE STATUS CARD */}
+        {/* SYSTEM STATUS */}
         <div className="mt-6 mb-6 p-5 bg-slate-50 dark:bg-zinc-900/40 rounded-3xl border border-slate-100 dark:border-white/5 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-            <ShieldCheck size={40} className="text-[#63D2F3]" />
+            <ShieldCheck size={40} className="text-violet-500" />
           </div>
 
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-tighter">System Health</span>
-            <span className="text-[10px] font-bold text-[#63D2F3] bg-[#63D2F3]/10 px-2 py-0.5 rounded-full">85%</span>
+            <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-tighter">Admin Access</span>
+            <span className="text-[10px] font-bold text-violet-500 bg-violet-500/10 px-2 py-0.5 rounded-full">Active</span>
           </div>
 
           <div className="h-1.5 w-full bg-slate-200 dark:bg-zinc-800 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: "85%" }}
+              animate={{ width: "100%" }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="h-full bg-[#63D2F3] shadow-[0_0_10px_#63D2F3]"
+              className="h-full bg-violet-500 shadow-[0_0_10px_#8B5CF6]"
             />
           </div>
           <p className="text-[8px] font-bold text-slate-400 dark:text-zinc-500 mt-3 uppercase tracking-widest leading-tight">
-            Faculty profile is almost complete.
+            Full system access granted.
           </p>
         </div>
 

@@ -60,8 +60,13 @@ export default function InstituteLoginPage() {
       sessionStorage.setItem("user_email", res.institute?.email || email);
       sessionStorage.setItem("user_role", (res.institute?.role || "FACULTY").toLowerCase());
 
-      // 🚀 Redirect to faculty dashboard
-      router.push("/faculty");
+      // 🚀 Redirect based on role
+      const role = (res.institute?.role || "faculty").toLowerCase();
+      if (role === "master" || role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/faculty");
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Institute login failed";
       alert(message);
@@ -84,12 +89,25 @@ export default function InstituteLoginPage() {
           </div>
           <div className="text-center space-y-2">
             <h1 className="text-4xl font-black tracking-tighter text-slate-800 uppercase">
-              Institute <span className="text-[#63D2F3]">Login</span>
+              Faculty <span className="text-[#63D2F3]">Login</span>
             </h1>
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
-              Faculty & Admin Portal
+              Faculty Portal Access
             </p>
           </div>
+        </div>
+
+        {/* Toggle Nav */}
+        <div className="flex bg-slate-100/80 p-1.5 rounded-2xl mb-8 border border-slate-100 shadow-sm">
+          <div className="flex-1 text-center py-3 bg-white rounded-xl shadow-sm text-[10px] font-black uppercase text-[#63D2F3] cursor-default">
+            Faculty Login
+          </div>
+          <Link href="/admin-login" className="flex-1 text-center py-3 rounded-xl text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-all">
+            Admin Login
+          </Link>
+          <Link href="/institute-register" className="flex-1 text-center py-3 rounded-xl text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-all">
+            Register
+          </Link>
         </div>
 
         {/* Login Card */}
@@ -138,13 +156,6 @@ export default function InstituteLoginPage() {
             {!loading && <Zap size={16} />}
           </button>
 
-          {/* Institute register */}
-          <p className="text-center text-xs font-bold text-slate-400">
-            New institute?{" "}
-            <Link href="/institute-register" className="text-[#63D2F3] font-black">
-              Register here
-            </Link>
-          </p>
         </div>
 
         <p className="mt-10 text-center text-[9px] font-black text-slate-300 uppercase tracking-[0.4em]">

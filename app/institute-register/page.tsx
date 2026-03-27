@@ -71,8 +71,8 @@ export default function InstituteRegisterPage() {
       sessionStorage.setItem("user_role", (res.user?.role || "admin").toLowerCase());
       sessionStorage.setItem("institute_id", res.user?.instituteId || "");
 
-      // 🚀 Go to faculty dashboard
-      router.push("/faculty");
+      // 🚀 Go to admin dashboard
+      router.push("/admin");
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "Institute registration failed");
     } finally {
@@ -102,6 +102,19 @@ export default function InstituteRegisterPage() {
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
               Create Institute Admin Account
             </p>
+          </div>
+        </div>
+
+        {/* Toggle Nav */}
+        <div className="flex bg-slate-100/80 p-1.5 rounded-2xl mb-8 border border-slate-100 shadow-sm">
+          <Link href="/institute-login" className="flex-1 text-center py-3 rounded-xl text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-all">
+            Faculty Login
+          </Link>
+          <Link href="/admin-login" className="flex-1 text-center py-3 rounded-xl text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-all">
+            Admin Login
+          </Link>
+          <div className="flex-1 text-center py-3 bg-white rounded-xl shadow-sm text-[10px] font-black uppercase text-[#63D2F3] cursor-default">
+            Register
           </div>
         </div>
 
@@ -171,16 +184,6 @@ export default function InstituteRegisterPage() {
             {!loading && <Zap size={16} />}
           </button>
 
-          {/* Login Link */}
-          <p className="text-center text-xs font-bold text-slate-400">
-            Already registered?{" "}
-            <Link
-              href="/institute-login"
-              className="text-[#63D2F3] font-black"
-            >
-              Login here
-            </Link>
-          </p>
         </div>
 
         <p className="mt-10 text-center text-[9px] font-black text-slate-300 uppercase tracking-[0.4em]">

@@ -7,11 +7,13 @@ import { clearAuthData, getToken } from "@/lib/auth";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRoles?: string[];
+  redirectTo?: string;
 }
 
 export default function ProtectedRoute({
   children,
   requiredRoles,
+  redirectTo = "/institute-login",
 }: ProtectedRouteProps) {
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -23,7 +25,7 @@ export default function ProtectedRoute({
         const token = getToken();
 
         if (!token) {
-          router.replace("/institute-login");
+          router.replace(redirectTo);
           setIsCheckingAuth(false);
           return;
         }
@@ -33,7 +35,7 @@ export default function ProtectedRoute({
           const allowed = requiredRoles.map((r) => r.toLowerCase());
 
           if (!userRole || !allowed.includes(userRole)) {
-            router.replace("/institute-login");
+            router.replace(redirectTo);
             setIsCheckingAuth(false);
             return;
           }
@@ -44,7 +46,7 @@ export default function ProtectedRoute({
         setIsCheckingAuth(false);
       } catch (error) {
         console.error("Authentication check failed:", error);
-        router.replace("/institute-login");
+        router.replace(redirectTo);
         setIsCheckingAuth(false);
       }
     };
@@ -52,14 +54,7 @@ export default function ProtectedRoute({
     verifyAccess();
   }, [router, requiredRoles]);
 
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      clearAuthData();
-    };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, []);
 
   // Show loading state while checking authentication
   if (isCheckingAuth || !hasAccess) {

@@ -1,38 +1,35 @@
 "use client";
 
-import Link from "next/link";
 import {
   Menu,
   UserCircle,
-  Settings,
   LogOut,
   Sun,
   Moon,
   ChevronDown,
-  ShieldCheck
+  ShieldCheck,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardTheme } from "../../../components/ThemeProvider";
 import { logout } from "@/lib/auth";
 
-interface FacultyHeaderProps {
+interface AdminHeaderProps {
   onOpenSidebar: () => void;
 }
 
-export default function FacultyHeader({ onOpenSidebar }: FacultyHeaderProps) {
+export default function AdminHeader({ onOpenSidebar }: AdminHeaderProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [name, setName] = useState("Professor");
+  const [name, setName] = useState("Admin");
 
   const { theme, toggleTheme } = useDashboardTheme();
-
   const profileRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const storedName = localStorage.getItem("user_name");
+    const storedName = sessionStorage.getItem("user_name") || localStorage.getItem("user_name");
     if (storedName) setName(storedName);
 
     const handleScroll = () => setScrolled(window.scrollY > 15);
@@ -63,7 +60,7 @@ export default function FacultyHeader({ onOpenSidebar }: FacultyHeaderProps) {
           }
         `}
       >
-        {/* LEFT SECTION */}
+        {/* LEFT */}
         <div className="flex items-center gap-5">
           <button
             onClick={onOpenSidebar}
@@ -74,19 +71,19 @@ export default function FacultyHeader({ onOpenSidebar }: FacultyHeaderProps) {
 
           <div className="relative group">
             <h1 className="text-lg font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <span className="bg-gradient-to-r from-[#63D2F3] to-[#4A90E2] bg-clip-text text-transparent">
-                FACULTY
+              <span className="bg-gradient-to-r from-violet-500 to-purple-400 bg-clip-text text-transparent">
+                ADMIN
               </span>
               <span className="opacity-40 font-light">/</span>
-              <span className="text-[11px] tracking-[0.3em] font-bold opacity-70">HUB</span>
+              <span className="text-[11px] tracking-[0.3em] font-bold opacity-70">CONSOLE</span>
             </h1>
-            <div className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#63D2F3] transition-all group-hover:w-full" />
+            <div className="absolute -bottom-1 left-0 w-0 h-[2px] bg-violet-500 transition-all group-hover:w-full" />
           </div>
         </div>
 
-        {/* RIGHT SECTION */}
+        {/* RIGHT */}
         <div className="flex items-center gap-4">
-          {/* Neon Theme Toggle */}
+          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             className="relative p-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors group"
@@ -98,13 +95,13 @@ export default function FacultyHeader({ onOpenSidebar }: FacultyHeaderProps) {
             ))}
           </button>
 
-          {/* Cyber Profile Button */}
+          {/* Profile */}
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="group flex items-center gap-3 p-1 pr-4 rounded-xl bg-slate-900 dark:bg-white transition-all hover:ring-4 hover:ring-[#63D2F3]/20"
+              className="group flex items-center gap-3 p-1 pr-4 rounded-xl bg-slate-900 dark:bg-white transition-all hover:ring-4 hover:ring-violet-500/20"
             >
-              <div className="h-9 w-9 bg-[#63D2F3] rounded-lg flex items-center justify-center text-slate-900 shadow-inner">
+              <div className="h-9 w-9 bg-violet-500 rounded-lg flex items-center justify-center text-white shadow-inner">
                 <UserCircle className="w-6 h-6" strokeWidth={2} />
               </div>
 
@@ -112,10 +109,10 @@ export default function FacultyHeader({ onOpenSidebar }: FacultyHeaderProps) {
                 <span className="text-[10px] font-black text-white dark:text-slate-900 uppercase tracking-tighter">
                   {name}
                 </span>
-                <span className="text-[8px] font-bold text-[#63D2F3] dark:text-slate-500 uppercase mt-0.5">Verified</span>
+                <span className="text-[8px] font-bold text-violet-400 dark:text-slate-500 uppercase mt-0.5">Master Admin</span>
               </div>
 
-              <ChevronDown className={`w-3.5 h-3.5 ml-1 transition-transform duration-500 ${isProfileOpen ? 'rotate-180 text-[#63D2F3]' : 'text-slate-400'}`} />
+              <ChevronDown className={`w-3.5 h-3.5 ml-1 transition-transform duration-500 ${isProfileOpen ? 'rotate-180 text-violet-400' : 'text-slate-400'}`} />
             </button>
 
             <AnimatePresence>
@@ -127,21 +124,14 @@ export default function FacultyHeader({ onOpenSidebar }: FacultyHeaderProps) {
                   className="absolute right-0 mt-4 w-64 origin-top-right bg-white/90 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.2)] border border-slate-100 dark:border-zinc-800 p-2 z-50"
                 >
                   <div className="flex items-center gap-3 p-3 mb-2 bg-slate-50 dark:bg-zinc-800/50 rounded-xl">
-                    <div className="h-10 w-10 rounded-lg bg-[#63D2F3]/20 flex items-center justify-center">
-                      <ShieldCheck className="w-5 h-5 text-[#63D2F3]" />
+                    <div className="h-10 w-10 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                      <ShieldCheck className="w-5 h-5 text-violet-500" />
                     </div>
                     <div className="flex flex-col overflow-hidden">
                       <p className="text-[11px] font-black text-slate-800 dark:text-white truncate uppercase">{name}</p>
-                      <p className="text-[9px] font-medium text-slate-400 dark:text-zinc-500">Faculty Member</p>
+                      <p className="text-[9px] font-medium text-violet-500">Master Admin</p>
                     </div>
                   </div>
-
-                  <Link href="/faculty/profile">
-                    <button className="w-full flex items-center gap-3 p-3 rounded-xl text-[10px] font-black uppercase text-slate-600 dark:text-zinc-400 hover:bg-[#63D2F3] hover:text-white dark:hover:text-slate-900 transition-all group">
-                      <Settings className="w-4 h-4 transition-transform group-hover:rotate-45" strokeWidth={2.5} />
-                      Account Settings
-                    </button>
-                  </Link>
 
                   <button
                     onClick={logout}
