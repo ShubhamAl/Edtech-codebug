@@ -31,9 +31,13 @@ import { motion } from "framer-motion";
 // ── CONSTANTS ─────────────────────────────────────────────────
 const PERFORMANCE_API = "https://campuspp-f7qx.onrender.com/api";
 
-// ── DESIGN TOKENS ─────────────────────────────────────────────
-const BORDER = "border-2 border-[#DCE4EE] dark:border-zinc-800";
-const HOVER = "transition-all duration-300 hover:border-[#61C6EA]/45 dark:hover:border-[#61C6EA]/45";
+// ── DESIGN TOKENS (Neubrutalism) ──────────────────────────────
+const BB  = "border-[3px] border-black dark:border-white";
+const HS  = "shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]";
+const HE  = "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-100";
+// Legacy aliases so unchanged JSX still compiles
+const BORDER = BB;
+const HOVER  = HE;
 
 // ── TYPES ─────────────────────────────────────────────────────
 interface CurrentPerformance {
@@ -159,7 +163,7 @@ interface StudentPerformanceResponse {
 
 // ── SKELETON ──────────────────────────────────────────────────
 const Skeleton = ({ className = "" }: { className?: string }) => (
-  <div className={`animate-pulse bg-black/10 dark:bg-white/10 rounded-xl ${className}`} />
+  <div className={`animate-pulse bg-black/10 dark:bg-white/10 rounded-2xl ${className}`} />
 );
 
 // ── CARD COMPONENT ────────────────────────────────────────────
@@ -167,8 +171,8 @@ const Card = ({ children, className = "", delay = 0 }: { children: React.ReactNo
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-    className={`bg-white/95 dark:bg-zinc-900 ${BORDER} ${HOVER} rounded-[2rem] p-6 ${className}`}
+    transition={{ delay, duration: 0.4 }}
+    className={`bg-white dark:bg-zinc-900 ${BB} ${HS} rounded-[2rem] p-6 ${className}`}
   >
     {children}
   </motion.div>
@@ -201,21 +205,21 @@ function ProgressRing({ value, size = 120, strokeWidth = 10, color = "#61C6EA", 
 }
 
 // ── METRIC BAR ────────────────────────────────────────────────
-function MetricBar({ label, value, max = 100, color = "#61C6EA" }: { label: string; value: number; max?: number; color?: string }) {
+function MetricBar({ label, value, max = 100, color = "#63D2F3" }: { label: string; value: number; max?: number; color?: string }) {
   const pct = Math.min((value / max) * 100, 100);
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-black uppercase tracking-widest text-[#8799B5]">{label}</span>
-        <span className="text-sm font-[1000]">{value}<span className="text-[#8799B5] text-xs">/{max}</span></span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/50">{label}</span>
+        <span className="text-sm font-black text-black dark:text-white">{value}<span className="text-black/40 dark:text-white/40 text-xs">/{max}</span></span>
       </div>
-      <div className="h-2.5 w-full bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+      <div className="h-3 w-full bg-black/10 dark:bg-white/10 rounded-none border-[2px] border-black dark:border-white overflow-hidden">
         <motion.div
-          className="h-full rounded-full"
+          className="h-full"
           style={{ backgroundColor: color }}
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
-          transition={{ duration: 1, ease: [0.4, 0, 0.2, 1] }}
+          transition={{ duration: 1 }}
         />
       </div>
     </div>
@@ -226,12 +230,12 @@ function MetricBar({ label, value, max = 100, color = "#61C6EA" }: { label: stri
 function SectionHeader({ icon: Icon, title, badge }: { icon: React.ComponentType<any>; title: string; badge?: string }) {
   return (
     <div className="flex items-center gap-3 mb-6">
-      <div className={`p-2 bg-[#61C6EA]/10 ${BORDER} rounded-xl`}>
-        <Icon size={20} strokeWidth={2.5} className="text-[#61C6EA]" />
+      <div className={`p-2 bg-[#8E97FD] ${BB} rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]`}>
+        <Icon size={18} strokeWidth={3} className="text-black" />
       </div>
-      <h2 className="text-xl font-[1000] uppercase tracking-tighter italic">{title}</h2>
+      <h2 className="text-lg font-black uppercase tracking-tighter text-black dark:text-white">{title}</h2>
       {badge && (
-        <span className={`ml-auto px-3 py-1 ${BORDER} rounded-lg text-[9px] font-black uppercase bg-[#61C6EA]/10 text-[#61C6EA]`}>
+        <span className={`ml-auto px-3 py-1 ${BB} rounded-lg text-[9px] font-black uppercase bg-[#FFD600] text-black`}>
           {badge}
         </span>
       )}
@@ -277,14 +281,14 @@ export default function StudentDetailPage() {
   // ── LOADING STATE ───────────────────────────────────────────
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        <Skeleton className="h-12 w-48 rounded-2xl" />
-        <Skeleton className="h-48 w-full rounded-[2rem]" />
-        <div className="grid grid-cols-5 gap-4">
-          {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-32 rounded-[2rem]" />)}
+      <div className="max-w-7xl mx-auto p-6 md:p-10 space-y-6 bg-[#F9F4F1] dark:bg-zinc-950 min-h-screen">
+        <Skeleton className="h-10 w-44" />
+        <Skeleton className="h-44 w-full" />
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-28" />)}
         </div>
-        <Skeleton className="h-64 w-full rounded-[2rem]" />
-        <Skeleton className="h-96 w-full rounded-[2rem]" />
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-80 w-full" />
       </div>
     );
   }
@@ -292,19 +296,19 @@ export default function StudentDetailPage() {
   // ── ERROR STATE ─────────────────────────────────────────────
   if (error || !data) {
     return (
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6 md:p-10 bg-[#F9F4F1] dark:bg-zinc-950 min-h-screen">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-400 mb-6 hover:text-[#63D2F3] transition-colors"
+          className={`flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black dark:text-white mb-6 ${BB} px-4 py-2 rounded-xl ${HE} ${HS} bg-white dark:bg-zinc-900`}
         >
-          <ArrowLeft size={16} /> Back to Students
+          <ArrowLeft size={16} strokeWidth={3} /> Back to Students
         </button>
-        <div className={`bg-red-50 dark:bg-red-900/20 ${BORDER} rounded-[2rem] p-12 text-center`}>
-          <AlertTriangle size={48} className="mx-auto text-red-500 mb-4" />
-          <p className="text-red-600 dark:text-red-400 font-bold text-lg">{error || "Student not found"}</p>
+        <div className={`${BB} ${HS} rounded-[2rem] p-12 text-center bg-white dark:bg-zinc-900`}>
+          <AlertTriangle size={48} className="mx-auto text-[#FF6AC1] mb-4" strokeWidth={3} />
+          <p className="font-black text-lg uppercase text-black dark:text-white">{error || "Student not found"}</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-6 py-3 bg-red-500 text-white rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-red-600 transition-colors"
+            className={`mt-6 px-6 py-3 bg-[#FF6AC1] text-black ${BB} ${HS} ${HE} font-black text-xs uppercase tracking-wider rounded-2xl`}
           >
             Retry
           </button>
@@ -346,31 +350,37 @@ export default function StudentDetailPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-16 px-4">
+    <div className="max-w-7xl mx-auto space-y-8 pb-16 px-4 md:px-10 bg-[#F9F4F1] dark:bg-zinc-950 min-h-screen pt-8">
 
       {/* ── BACK BUTTON ────────────────────────────────────── */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-[#61C6EA] transition-colors"
+        className={`flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black dark:text-white ${BB} px-4 py-2 rounded-xl ${HE} ${HS} bg-white dark:bg-zinc-900`}
       >
-        <ArrowLeft size={16} /> Back to Students
+        <ArrowLeft size={16} strokeWidth={3} /> Back to Students
       </button>
 
       {/* ── SMART ALERT BANNER ─────────────────────────────── */}
       {smartAlert && (
         <motion.div
           initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-          className={`flex items-center gap-4 p-5 ${getAlertStyles(smartAlert.level).bg} border-2 rounded-[2rem]`}
+          className={`flex items-center gap-4 p-5 ${BB} ${HS} rounded-[2rem] ${
+            smartAlert.level?.toLowerCase() === 'danger' || smartAlert.level?.toLowerCase() === 'critical'
+              ? 'bg-[#FF6AC1]'
+              : smartAlert.level?.toLowerCase() === 'warning'
+              ? 'bg-[#FFD600]'
+              : 'bg-[#A3E635]'
+          }`}
         >
           <span className="text-3xl">{smartAlert.icon}</span>
           <div className="flex-1">
-            <p className={`text-sm font-[1000] uppercase tracking-tight ${getAlertStyles(smartAlert.level).text}`}>{smartAlert.message}</p>
+            <p className="text-sm font-black uppercase tracking-tight text-black">{smartAlert.message}</p>
             <div className="flex gap-4 mt-1">
-              {smartAlert.notifyMentor && <span className="text-[9px] font-black uppercase tracking-widest text-[#8799B5]">⚡ Mentor Notified</span>}
-              {smartAlert.actionRequired && <span className="text-[9px] font-black uppercase tracking-widest text-red-400">🔴 Action Required</span>}
+              {smartAlert.notifyMentor && <span className="text-[9px] font-black uppercase tracking-widest text-black/60">⚡ Mentor Notified</span>}
+              {smartAlert.actionRequired && <span className="text-[9px] font-black uppercase tracking-widest text-black/60">🔴 Action Required</span>}
             </div>
           </div>
-          <span className={`px-4 py-2 ${BORDER} rounded-xl text-[9px] font-black uppercase ${getAlertStyles(smartAlert.level).text} bg-white/60 dark:bg-zinc-900/60`}>
+          <span className={`px-4 py-2 ${BB} rounded-xl text-[9px] font-black uppercase text-black bg-white/60`}>
             {smartAlert.level}
           </span>
         </motion.div>
@@ -380,32 +390,20 @@ export default function StudentDetailPage() {
       <Card delay={0.05} className="relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-center gap-6">
-            <div className="h-20 w-20 bg-gradient-to-br from-[#61C6EA] to-[#B7A4EA] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#61C6EA]/20">
-              <User size={40} strokeWidth={2.5} />
+            <div className={`h-20 w-20 bg-[#8E97FD] ${BB} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-2xl flex items-center justify-center rotate-3`}>
+              <User size={36} strokeWidth={3} className="text-black" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-[1000] tracking-tighter uppercase">{data.studentName}</h1>
-              <div className="flex flex-wrap items-center gap-4 mt-2">
-                <span className="text-xs font-bold text-[#8799B5] flex items-center gap-1">
-                  <Target size={12} /> ID: {data.studentId}
-                </span>
-                <span className="text-xs font-bold text-[#8799B5] flex items-center gap-1">
-                  <Activity size={12} /> Analyses: {data.totalAnalyses}
-                </span>
-                <span className="text-xs font-bold text-[#8799B5] flex items-center gap-1">
-                  <Calendar size={12} /> {new Date(perf.analysisDate).toLocaleDateString()}
-                </span>
-                {data.fallbackUsed && (
-                  <span className="text-[9px] font-black uppercase tracking-wider px-3 py-1 bg-amber-500/10 text-amber-500 rounded-lg">Fallback Data</span>
-                )}
-              </div>
+              <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-black dark:text-white">{data.studentName}</h1>
             </div>
           </div>
 
           {/* Risk Badge */}
-          <div className={`flex flex-col items-center gap-1 px-8 py-4 ${risk.bg} border-2 ${risk.border} rounded-[2rem]`}>
-            <p className="text-[9px] font-black uppercase tracking-widest text-[#8799B5]">Risk Level</p>
-            <p className={`text-3xl font-[1000] ${risk.text}`}>{perf.riskLevel}</p>
+          <div className={`flex flex-col items-center gap-2 px-8 py-5 ${BB} ${HS} rounded-[2rem] ${
+            perf.riskLevel === 'High' ? 'bg-[#FF6AC1]' : perf.riskLevel === 'Medium' ? 'bg-[#FFD600]' : 'bg-[#A3E635]'
+          }`}>
+            <p className="text-[9px] font-black uppercase tracking-widest text-black/60">Risk Level</p>
+            <p className="text-4xl font-black text-black uppercase">{perf.riskLevel}</p>
           </div>
         </div>
       </Card>
@@ -413,20 +411,20 @@ export default function StudentDetailPage() {
       {/* ── TOP METRIC CARDS ───────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
-          { label: "Score", value: perf.score, suffix: "/100", icon: Target, color: "#61C6EA" },
-          { label: "Stability", value: stability?.stabilityScore ?? 0, suffix: "/100", icon: Gauge, color: "#B7A4EA" },
-          { label: "Failure Risk", value: stability?.finalRisk ?? 0, suffix: "%", icon: AlertTriangle, color: "#E96D7C" },
-          { label: "Confidence", value: stability?.predictionConfidence ?? 0, suffix: "%", icon: Brain, color: "#8DB6E8" },
-          { label: "Quiz Score", value: stability?.resolvedQuizScore ?? perf.quizScore ?? 0, suffix: "/100", icon: Sparkles, color: "#F5A623" },
+          { label: "Score",        value: perf.score,                                 suffix: "/100", icon: Target,        bg: "#63D2F3" },
+          { label: "Stability",    value: stability?.stabilityScore ?? 0,             suffix: "/100", icon: Gauge,          bg: "#8E97FD" },
+          { label: "Failure Risk", value: stability?.finalRisk ?? 0,                  suffix: "%",    icon: AlertTriangle,  bg: "#FF6AC1" },
+          { label: "Confidence",   value: stability?.predictionConfidence ?? 0,       suffix: "%",    icon: Brain,          bg: "#A3E635" },
+          { label: "Quiz Score",   value: stability?.resolvedQuizScore ?? perf.quizScore ?? 0, suffix: "/100", icon: Sparkles, bg: "#FFD600" },
         ].map((m, i) => (
           <Card key={i} delay={0.1 + i * 0.05} className="flex flex-col items-center text-center">
-            <div className="p-3 rounded-xl mb-3" style={{ backgroundColor: `${m.color}15` }}>
-              <m.icon size={22} strokeWidth={2.5} style={{ color: m.color }} />
+            <div className={`p-3 ${BB} shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] rounded-xl mb-3 group-hover:rotate-6 transition-transform`} style={{ backgroundColor: m.bg }}>
+              <m.icon size={22} strokeWidth={3} className="text-black" />
             </div>
-            <p className="text-3xl font-[1000] tracking-tighter">
-              {m.value}<span className="text-sm text-[#8799B5] ml-0.5">{m.suffix}</span>
+            <p className="text-4xl font-black tracking-tighter text-black dark:text-white">
+              {m.value}<span className="text-sm text-black/40 dark:text-white/40 ml-0.5">{m.suffix}</span>
             </p>
-            <p className="text-[9px] font-black uppercase tracking-widest text-[#8799B5] mt-1">{m.label}</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-black/50 dark:text-white/50 mt-2">{m.label}</p>
           </Card>
         ))}
       </div>
@@ -454,17 +452,17 @@ export default function StudentDetailPage() {
           <div className="flex flex-col items-center">
             <ProgressRing value={stability?.stabilityScore ?? 0} color={risk.fill} label="Score" size={140} />
             <div className="mt-4 w-full space-y-2">
-              <div className={`flex items-center justify-between p-3 ${BORDER} rounded-xl`}>
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#8799B5]">Base Risk</span>
-                <span className="text-sm font-[1000]">{stability?.baseFailureRisk ?? 0}%</span>
+              <div className={`flex items-center justify-between p-3 ${BB} rounded-xl bg-[#F9F4F1] dark:bg-zinc-800`}>
+                <span className="text-[9px] font-black uppercase tracking-widest text-black/50 dark:text-white/50">Base Risk</span>
+                <span className="text-sm font-black text-black dark:text-white">{stability?.baseFailureRisk ?? 0}%</span>
               </div>
-              <div className={`flex items-center justify-between p-3 ${BORDER} rounded-xl`}>
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#8799B5]">Final Risk</span>
-                <span className="text-sm font-[1000] text-[#E96D7C]">{stability?.finalRisk ?? 0}%</span>
+              <div className={`flex items-center justify-between p-3 ${BB} rounded-xl bg-[#FF6AC1]`}>
+                <span className="text-[9px] font-black uppercase tracking-widest text-black/70">Final Risk</span>
+                <span className="text-sm font-black text-black">{stability?.finalRisk ?? 0}%</span>
               </div>
-              <div className={`flex items-center justify-between p-3 ${BORDER} rounded-xl`}>
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#8799B5]">Quiz Source</span>
-                <span className="text-[10px] font-black uppercase text-[#61C6EA]">{stability?.quizScoreSource ?? "N/A"}</span>
+              <div className={`flex items-center justify-between p-3 ${BB} rounded-xl bg-[#F9F4F1] dark:bg-zinc-800`}>
+                <span className="text-[9px] font-black uppercase tracking-widest text-black/50 dark:text-white/50">Quiz Source</span>
+                <span className="text-[10px] font-black uppercase text-black dark:text-white">{stability?.quizScoreSource ?? "N/A"}</span>
               </div>
             </div>
           </div>

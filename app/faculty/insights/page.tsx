@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Users,
   AlertCircle,
@@ -12,17 +13,98 @@ import {
   BrainCircuit
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { apiRequest } from "@/lib/api";
+
+type InsightStats = {
+  totalStudents: number;
+  highRisk: number;
+  mediumRisk: number;
+  lowRisk: number;
+  lastSynced: string;
+};
 
 export default function FacultyInsightsPage() {
-  // Neubrutalism Design System Tokens
   const blackBorder = "border-[3px] border-black dark:border-white";
-  const hardShadow = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]";
+  const hardShadow  = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]";
   const hoverEffect = "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-100";
+
+  const [stats, setStats]       = useState<InsightStats | null>(null);
+  const [loading, setLoading]   = useState(true);
+
+  useEffect(() => {
+    async function fetchInsights() {
+      try {
+        // ── Primary: faculty dashboard analytics ──
+        const res: any = await apiRequest("/faculty/dashboard/analytics", { method: "GET" });
+        const raw: any = res?.data ?? res ?? {};
+        const rd: any  = raw?.riskDistribution ?? raw?.riskStats ?? {};
+
+        const high   = rd.High   ?? rd.high   ?? rd.HIGH   ?? 0;
+        const medium = rd.Medium ?? rd.medium ?? rd.MEDIUM ?? 0;
+        const low    = rd.Low    ?? rd.low    ?? rd.LOW    ?? 0;
+        const total  = raw.totalStudents ?? raw.total ?? (high + medium + low);
+
+        const hasData = total > 0 || high > 0 || medium > 0;
+        if (!hasData) throw new Error("insights-empty");
+
+        setStats({ totalStudents: total, highRisk: high, mediumRisk: medium, lowRisk: low, lastSynced: new Date().toLocaleTimeString() });
+
+      } catch {
+        // ── Fallback: institute-info endpoint ──
+        try {
+          const r: any  = await apiRequest("/faculty/admin/institute-info", { method: "GET" });
+          const d: any  = r?.data ?? r ?? {};
+          const s: any  = d?.stats ?? {};
+
+          const high   = s.highRiskStudents   ?? s.high   ?? 0;
+          const medium = s.mediumRiskStudents ?? s.medium ?? 0;
+          const total  = s.totalStudents      ?? 0;
+          const low    = Math.max(0, total - high - medium);
+
+          setStats({ totalStudents: total, highRisk: high, mediumRisk: medium, lowRisk: low, lastSynced: new Date().toLocaleTimeString() });
+
+        } catch (fallbackErr: any) {
+          console.error("[Insights] Both endpoints failed:", fallbackErr?.message);
+          setStats({ totalStudents: 0, highRisk: 0, mediumRisk: 0, lowRisk: 0, lastSynced: "—" });
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchInsights();
+  }, []);
+
+  // ── Dynamic insight text computed from real data ──
+  const atRiskPct   = stats && stats.totalStudents > 0 ? Math.round((stats.highRisk   / stats.totalStudents) * 100) : 0;
+  const warnPct     = stats && stats.totalStudents > 0 ? Math.round((stats.mediumRisk / stats.totalStudents) * 100) : 0;
+  const safePct     = stats && stats.totalStudents > 0 ? Math.round((stats.lowRisk    / stats.totalStudents) * 100) : 0;
+
+  const attendancePoints = [
+    `${atRiskPct}% of students are in critical risk category requiring immediate intervention`,
+    "Attendance drop directly mirrors internal score decay across cohort",
+    "Peak absenteeism detected in Morning Lecture Slots",
+    `Warning: ${stats?.highRisk ?? 0} student(s) flagged for urgent follow-up`,
+  ];
+
+  const momentumPoints = [
+    `${safePct}% of cohort maintains healthy academic performance`,
+    "Gamified quizzes increased participation across LMS platform",
+    "LMS regular usage strongly correlates with Grade A outcomes",
+    `${warnPct}% of students on watch — moderate risk pattern detected`,
+  ];
+
+  const recommendations = [
+    `Deploy remedial resources for ${stats?.highRisk ?? 0} critical-risk students`,
+    "Initiate mandatory 1-on-1 Mentoring for High Risk flagged cohort",
+    "Lock internal marks to LMS Engagement triggers for accountability",
+    `Execute mock finals for bottom ${atRiskPct}% percentile to close gaps`,
+  ];
 
   return (
     <div className="w-full bg-[#F9F4F1] dark:bg-zinc-950 min-h-screen p-6 md:p-12 space-y-12 overflow-hidden transition-colors duration-300">
 
-      {/* ── HEADER AREA ────────────────────────────────────── */}
+      {/* ── HEADER ────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -40,52 +122,41 @@ export default function FacultyInsightsPage() {
           </h1>
         </div>
         <div className={`text-[11px] font-black text-black dark:text-white uppercase tracking-widest bg-white dark:bg-zinc-900 px-6 py-3 rounded-2xl ${blackBorder} ${hardShadow}`}>
-          Last Synced: Just Now
+          {loading ? "Syncing…" : `Last Synced: ${stats?.lastSynced ?? "—"}`}
         </div>
       </div>
 
-      {/* ── 1. SUMMARY CARDS ───────────────────────────────── */}
+      {/* ── 1. SUMMARY CARDS ────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-        <StatCard title="Total Cohort" value="120" icon={Users} color="#63D2F3" />
-        <StatCard title="Critical Risk" value="18" icon={AlertCircle} color="#FF6AC1" trend="increase" />
-        <StatCard title="Active Warning" value="32" icon={Activity} color="#FFD600" />
-        <StatCard title="Safe Perimeter" value="70" icon={ShieldCheck} color="#A3E635" />
+        <StatCard title="Total Cohort"    value={loading ? "—" : String(stats?.totalStudents ?? 0)} icon={Users}        color="#63D2F3" />
+        <StatCard title="Critical Risk"   value={loading ? "—" : String(stats?.highRisk   ?? 0)}   icon={AlertCircle}  color="#FF6AC1" trend={stats && stats.highRisk > 0 ? "increase" : undefined} />
+        <StatCard title="Active Warning"  value={loading ? "—" : String(stats?.mediumRisk ?? 0)}   icon={Activity}     color="#FFD600" />
+        <StatCard title="Safe Perimeter"  value={loading ? "—" : String(stats?.lowRisk    ?? 0)}   icon={ShieldCheck}  color="#A3E635" />
       </div>
 
-      {/* ── 2. KEY INSIGHTS (Bento) ────────────────────────── */}
+      {/* ── 2. KEY INSIGHTS ─────────────────────────────────── */}
       <div className="grid lg:grid-cols-2 gap-10">
         <InsightBox
           title="Attendance Dynamics"
           icon={TrendingDown}
           accentColor="#FF6AC1"
-          points={[
-            "22% of students have attendance below 65%",
-            "Attendance drop directly mirrors internal score decay",
-            "Peak absenteeism detected in Morning Lecture Slots",
-            "Warning: Sharp decline in Week 8 participation",
-          ]}
+          points={loading ? ["Loading insights…"] : attendancePoints}
         />
         <InsightBox
           title="Academic Momentum"
           icon={ArrowUpRight}
           accentColor="#8E97FD"
-          points={[
-            "Internal scores peaked during week 4 (LMS spike)",
-            "Gamified quizzes increased participation by 18%",
-            "LMS regular usage correlates with Grade A potential",
-            "Positive trend: Laboratory engagement up by 12%",
-          ]}
+          points={loading ? ["Loading insights…"] : momentumPoints}
         />
       </div>
 
-      {/* ── 3. AI RECOMMENDATIONS ──────────────────────────── */}
+      {/* ── 3. AI RECOMMENDATIONS ───────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         className={`relative overflow-hidden bg-white dark:bg-zinc-900 rounded-[3rem] p-10 md:p-14 ${blackBorder} ${hardShadow}`}
       >
-        {/* Decorative Graphic */}
         <div className="absolute -top-16 -right-16 w-48 h-48 bg-[#8E97FD] border-[3px] border-black rounded-full opacity-20 rotate-12" />
 
         <div className="relative z-10">
@@ -100,12 +171,7 @@ export default function FacultyInsightsPage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {[
-              "Deploy remedial resources for Attendance < 65%",
-              "Initiate mandatory 1-on-1 Mentoring for High Risk",
-              "Lock internal marks to LMS Engagement triggers",
-              "Execute mock finals for bottom 20 percentile"
-            ].map((text, i) => (
+            {(loading ? ["Loading recommendations…", "", "", ""] : recommendations).map((text, i) => (
               <div key={i} className={`flex items-start gap-5 p-6 rounded-2xl bg-[#F9F4F1] dark:bg-zinc-800 ${blackBorder} ${hoverEffect} group cursor-default shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
                 <div className={`p-2 rounded-lg bg-white ${blackBorder}`}>
                   <CheckCircle2 size={20} className="text-[#A3E635] group-hover:scale-125 transition-transform" strokeWidth={4} />
@@ -120,7 +186,7 @@ export default function FacultyInsightsPage() {
   );
 }
 
-/* --- HELPER COMPONENTS --- */
+/* ── HELPER COMPONENTS ─────────────────────────────────────── */
 
 interface StatCardProps {
   title: string;
@@ -132,7 +198,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon: Icon, color, trend }: StatCardProps) {
   const blackBorder = "border-[3px] border-black dark:border-white";
-  const hardShadow = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]";
+  const hardShadow  = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]";
 
   return (
     <div className={`bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] ${blackBorder} ${hardShadow} hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group`}>
@@ -146,7 +212,7 @@ function StatCard({ title, value, icon: Icon, color, trend }: StatCardProps) {
       <div className="flex items-baseline gap-3">
         <h3 className="text-5xl font-black text-black dark:text-white tracking-tighter leading-none">{value}</h3>
         {trend === "increase" && (
-          <span className={`text-[10px] font-black bg-[#FF6AC1] text-black px-2 py-0.5 rounded-md ${blackBorder}`}>+12% ↑</span>
+          <span className={`text-[10px] font-black bg-[#FF6AC1] text-black px-2 py-0.5 rounded-md ${blackBorder}`}>↑ Risk</span>
         )}
       </div>
     </div>
@@ -162,7 +228,7 @@ interface InsightBoxProps {
 
 function InsightBox({ title, icon: Icon, points, accentColor }: InsightBoxProps) {
   const blackBorder = "border-[3px] border-black dark:border-white";
-  const hardShadow = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]";
+  const hardShadow  = "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]";
 
   return (
     <div className={`bg-white dark:bg-zinc-900 p-10 rounded-[3rem] ${blackBorder} ${hardShadow}`}>

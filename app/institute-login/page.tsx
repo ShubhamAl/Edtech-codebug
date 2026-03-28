@@ -15,6 +15,7 @@ export default function InstituteLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   // Neubrutalism Style Variables
   const blackBorder = "border-[3px] border-black";
@@ -23,40 +24,57 @@ export default function InstituteLoginPage() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      alert("Please enter both email and password");
+      setError("Please enter both email and password.");
       return;
     }
 
     try {
       setLoading(true);
+      setError("");
 
       const res = await apiRequest("/auth/insti-login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
 
+      const role = (res.user?.role || "faculty").toLowerCase();
+
       setToken(res.token);
 
-      localStorage.setItem("user_name", res.institute?.name || "Institute Admin");
-      localStorage.setItem("user_email", res.institute?.email || email);
-      localStorage.setItem("user_role", (res.institute?.role || "FACULTY").toLowerCase());
+      const name = res.user?.name || "User";
+      const userEmail = res.user?.email || email;
+      const instituteId = res.user?.instituteId || "";
+      const instituteName = res.user?.instituteName || "";
 
-      sessionStorage.setItem("user_name", res.institute?.name || "Institute Admin");
-      sessionStorage.setItem("user_email", res.institute?.email || email);
-      sessionStorage.setItem("user_role", (res.institute?.role || "FACULTY").toLowerCase());
+      // ✅ Store ALL session data — matching what register page stores
+      localStorage.setItem("user_name", name);
+      localStorage.setItem("user_email", userEmail);
+      localStorage.setItem("user_role", role);
+      localStorage.setItem("institute_id", instituteId);
+      localStorage.setItem("institute_name", instituteName);
 
-      const role = (res.institute?.role || "faculty").toLowerCase();
+      sessionStorage.setItem("user_name", name);
+      sessionStorage.setItem("user_email", userEmail);
+      sessionStorage.setItem("user_role", role);
+      sessionStorage.setItem("institute_id", instituteId);
+      sessionStorage.setItem("institute_name", instituteName);
+
+      // ✅ Redirect based on role returned from backend
       if (role === "master" || role === "admin") {
         router.push("/admin");
       } else {
         router.push("/faculty");
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Institute login failed";
-      alert(message);
+      const message = err instanceof Error ? err.message : "Login failed. Please check your credentials.";
+      setError(message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleLogin();
   };
 
   return (
@@ -79,11 +97,11 @@ export default function InstituteLoginPage() {
           </div>
           <div className="text-center space-y-2">
             <h1 className="text-5xl font-black tracking-tighter text-black uppercase leading-none">
-              Faculty <span className="text-[#63D2F3]">Login</span>
+              Institute <span className="text-[#63D2F3]">Login</span>
             </h1>
             <div className="relative inline-block mt-1">
               <span className="text-[10px] font-black text-black uppercase tracking-widest bg-[#A3E635] px-3 py-1 border-2 border-black">
-                Authorized Faculty Portal
+                Authorized Institute Portal
               </span>
             </div>
           </div>
@@ -112,6 +130,25 @@ export default function InstituteLoginPage() {
           animate={{ opacity: 1, y: 0 }}
           className={`bg-white ${blackBorder} p-8 md:p-10 rounded-[2.5rem] ${hardShadow} space-y-8`}
         >
+          {/* Role Info Banner */}
+          <div className="flex items-center gap-3 p-4 bg-[#F9F4F1] border-2 border-black rounded-2xl">
+            <Building2 size={20} className="text-[#63D2F3] shrink-0" strokeWidth={3} />
+            <p className="text-[11px] font-black text-black uppercase tracking-tight leading-tight">
+              Institute staff accounts only. Admins use the Admin Console.
+            </p>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="flex items-start gap-3 p-4 bg-[#FF6AC1] border-2 border-black rounded-2xl"
+            >
+              <p className="text-xs font-black text-black leading-tight uppercase">{error}</p>
+            </motion.div>
+          )}
+
           {/* Email Input */}
           <div className="space-y-2">
             <label className="text-[11px] font-black text-black uppercase tracking-widest block ml-1">
@@ -121,9 +158,10 @@ export default function InstituteLoginPage() {
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-black" size={20} strokeWidth={3} />
               <input
                 type="email"
-                placeholder="admin@institute.com"
+                placeholder="faculty@institute.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                onKeyDown={handleKeyDown}
                 className={`w-full bg-[#F9F4F1] ${blackBorder} rounded-2xl py-4 pl-12 pr-6 font-bold text-black placeholder:text-black/30 outline-none focus:bg-white transition-all`}
               />
             </div>
@@ -140,7 +178,8 @@ export default function InstituteLoginPage() {
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                onKeyDown={handleKeyDown}
                 className={`w-full bg-[#F9F4F1] ${blackBorder} rounded-2xl py-4 pl-12 pr-12 font-bold text-black placeholder:text-black/30 outline-none focus:bg-white transition-all`}
               />
               <button

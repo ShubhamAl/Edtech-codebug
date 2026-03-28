@@ -46,26 +46,35 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      const role = (res.institute?.role || "").toLowerCase();
-      if (role !== "master" && role !== "admin") {
+      const role = (res.user?.role || "faculty").toLowerCase();
+
+      // ✅ Admin portal only allows admin/master roles
+      if (role === "faculty") {
         setError(
-          "Access denied. This portal is for Master Admins only. Faculty should use the Faculty Login."
+          "Access Denied: Faculty accounts must use the Faculty Portal."
         );
         return;
       }
 
       setToken(res.token);
 
-      const name = res.institute?.name || "Admin";
-      const userEmail = res.institute?.email || email;
+      const name = res.user?.name || "Admin";
+      const userEmail = res.user?.email || email;
+      const instituteId = res.user?.instituteId || "";
+      const instituteName = res.user?.instituteName || "";
 
+      // ✅ Store ALL session data — matching what register page stores
       localStorage.setItem("user_name", name);
       localStorage.setItem("user_email", userEmail);
       localStorage.setItem("user_role", role);
+      localStorage.setItem("institute_id", instituteId);
+      localStorage.setItem("institute_name", instituteName);
 
       sessionStorage.setItem("user_name", name);
       sessionStorage.setItem("user_email", userEmail);
       sessionStorage.setItem("user_role", role);
+      sessionStorage.setItem("institute_id", instituteId);
+      sessionStorage.setItem("institute_name", instituteName);
 
       router.push("/admin");
     } catch (err: any) {

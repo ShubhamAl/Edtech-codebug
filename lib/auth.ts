@@ -6,6 +6,7 @@ const AUTH_KEYS = [
   "student_id",
   "user_role",
   "institute_id",
+  "institute_name",
 ];
 
 export const setToken = (token: string) => {

@@ -56,17 +56,80 @@ export default function FacultyDashboard() {
 
     async function fetchAnalytics() {
       try {
+        // ── Primary: faculty dashboard analytics endpoint ──
         const res: any = await apiRequest("/faculty/dashboard/analytics", { method: "GET" });
-        setStats(res.data);
-      } catch (err) {
-        setStats({
-          totalStudents: 150,
-          riskDistribution: { High: 12, Medium: 45, Low: 93 },
-          studentsAtRisk: 57,
-          interventionsRequired: 5,
-          byPriority: { critical: 1, moderate: 2, low: 2 },
-          studentsJoinedToday: 4
-        });
+        const raw: any = res?.data ?? res ?? {};
+
+        console.debug("[Dashboard] analytics raw response:", raw);
+
+        // Normalise — backend may return High/Medium/Low or high/medium/low
+        const rd = raw?.riskDistribution ?? raw?.riskStats ?? {};
+        const bp = raw?.byPriority ?? raw?.priorityBreakdown ?? {};
+
+        const parsed: DashboardAnalytics = {
+          totalStudents:        raw.totalStudents        ?? raw.total ?? 0,
+          riskDistribution: {
+            High:   rd.High   ?? rd.high   ?? rd.HIGH   ?? 0,
+            Medium: rd.Medium ?? rd.medium ?? rd.MEDIUM ?? 0,
+            Low:    rd.Low    ?? rd.low    ?? rd.LOW    ?? 0,
+          },
+          studentsAtRisk:       raw.studentsAtRisk       ?? raw.atRisk     ?? 0,
+          interventionsRequired: raw.interventionsRequired ?? raw.interventions ?? 0,
+          byPriority: {
+            critical: bp.critical ?? bp.Critical ?? 0,
+            moderate: bp.moderate ?? bp.Moderate ?? 0,
+            low:      bp.low      ?? bp.Low      ?? 0,
+          },
+          studentsJoinedToday: raw.studentsJoinedToday ?? raw.joinedToday ?? 0,
+        };
+
+        // If all zeros, data is probably missing → trigger fallback
+        const hasData = parsed.totalStudents > 0 || parsed.riskDistribution.High > 0 || parsed.riskDistribution.Medium > 0;
+        if (!hasData) throw new Error("analytics-empty");
+
+        setStats(parsed);
+
+      } catch (primaryErr: any) {
+        console.warn("[Dashboard] Primary analytics failed:", primaryErr?.message, "— trying institute-info fallback");
+
+        // ── Fallback: institute-level info endpoint ──
+        try {
+          const r: any = await apiRequest("/faculty/admin/institute-info", { method: "GET" });
+          const d: any = r?.data ?? r ?? {};
+          const s: any = d?.stats ?? {};
+
+          console.debug("[Dashboard] institute-info fallback:", s);
+
+          const high   = s.highRiskStudents   ?? s.high   ?? 0;
+          const medium = s.mediumRiskStudents ?? s.medium ?? 0;
+          const total  = s.totalStudents      ?? 0;
+          const low    = Math.max(0, total - high - medium);
+
+          setStats({
+            totalStudents:         total,
+            riskDistribution:      { High: high, Medium: medium, Low: low },
+            studentsAtRisk:        s.studentsAtRisk       ?? high + medium,
+            interventionsRequired: s.interventionsRequired ?? high,
+            byPriority: {
+              critical: s.critical ?? s.highRiskStudents ?? high,
+              moderate: s.moderate ?? medium,
+              low:      s.low      ?? low,
+            },
+            studentsJoinedToday: s.studentsJoinedToday ?? s.newToday ?? 0,
+          });
+
+        } catch (fallbackErr: any) {
+          console.error("[Dashboard] Both endpoints failed:", fallbackErr?.message);
+          // Show real zeros — do NOT fake data
+          setStats({
+            totalStudents: 0,
+            riskDistribution: { High: 0, Medium: 0, Low: 0 },
+            studentsAtRisk: 0,
+            interventionsRequired: 0,
+            byPriority: { critical: 0, moderate: 0, low: 0 },
+            studentsJoinedToday: 0,
+          });
+        }
       } finally {
         setLoading(false);
       }
