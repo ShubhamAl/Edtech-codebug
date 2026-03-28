@@ -240,7 +240,7 @@ function InsightStatCard({ title, value, icon: Icon, color, trend }: InsightStat
 
 interface InsightBoxProps {
   title: string;
-  icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
   points: string[];
   accentColor: string;
 }

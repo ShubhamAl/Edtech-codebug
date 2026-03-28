@@ -13,6 +13,7 @@ import {
   Loader2,
   ChevronDown,
   ChevronUp,
+  Zap,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiRequest } from "@/lib/api";
