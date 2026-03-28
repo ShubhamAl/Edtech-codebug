@@ -45,12 +45,15 @@ export default function AdminInsightsPage() {
     async function fetchInfo() {
       try {
         const res: any = await apiRequest("/faculty/admin/institute-info", { method: "GET" });
-        const d = res.data ?? res;
+        
+        const payload = res?.data || res || {};
+        const stats = payload?.stats || payload;
+
         setInfo({
-          totalStudents: d.totalStudents ?? 0,
-          totalFaculty: d.totalFaculty ?? 0,
-          highRiskStudents: d.highRiskStudents ?? 0,
-          instituteName: d.instituteName ?? d.name,
+          totalStudents: stats?.totalStudents || payload?.totalStudents || 0,
+          totalFaculty: stats?.totalFaculty || payload?.totalFaculty || 0,
+          highRiskStudents: stats?.highRiskStudents || stats?.highRisk || payload?.highRiskStudents || 0,
+          instituteName: payload?.instituteName || payload?.name || "Campus++",
         });
       } catch {
         setInfo({ totalStudents: 0, totalFaculty: 0, highRiskStudents: 0 });

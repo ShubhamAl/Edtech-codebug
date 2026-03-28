@@ -71,8 +71,11 @@ export default function AdminFacultyPage() {
       setLoading(true);
       setError(null);
       const res: any = await apiRequest("/faculty/admin/faculty", { method: "GET" });
-      const list = res.data ?? res.faculty ?? res ?? [];
-      setFaculty(Array.isArray(list) ? list : []);
+      
+      const payload = res?.data || res || {};
+      const list = payload?.faculty || payload?.data || payload || [];
+      
+      setFaculty(Array.isArray(list) ? list : (Array.isArray(res?.data?.data) ? res.data.data : []));
     } catch (err: any) {
       setError(err?.message || "Failed to load faculty.");
     } finally {
@@ -83,8 +86,11 @@ export default function AdminFacultyPage() {
   const fetchStudents = useCallback(async () => {
     try {
       const res: any = await apiRequest("/faculty/students", { method: "GET" });
-      const list = res.data ?? res.students ?? res ?? [];
-      setStudents(Array.isArray(list) ? list : []);
+      
+      const payload = res?.data || res || {};
+      const list = payload?.students || payload?.data || payload || [];
+      
+      setStudents(Array.isArray(list) ? list : (Array.isArray(res?.data?.data) ? res.data.data : []));
     } catch {
       // non-critical
     }

@@ -56,18 +56,29 @@ export default function AdminDashboard() {
     async function fetchInfo() {
       try {
         const res: any = await apiRequest("/faculty/admin/institute-info", { method: "GET" });
-        const d = res.data ?? res;
+        
+        // Handle various backend response wrappings
+        const payload = res?.data || res || {};
+        const stats = payload?.stats || payload;
+        
+        // Extract real values safely
+        const instituteName = payload?.instituteName || payload?.name || "Campus++";
+        const totalStudents = stats?.totalStudents || payload?.totalStudents || 0;
+        const totalFaculty  = stats?.totalFaculty || payload?.totalFaculty || 0;
+        const highRisk      = stats?.highRiskStudents || stats?.highRisk || payload?.highRiskStudents || 0;
+
         setInfo({
-          instituteName: d.instituteName ?? d.name ?? "Campus++",
-          adminName: d.adminName ?? stored ?? "Admin",
-          totalStudents: d.totalStudents ?? 0,
-          totalFaculty: d.totalFaculty ?? 0,
-          highRiskStudents: d.highRiskStudents ?? 0,
+          instituteName: instituteName,
+          adminName: payload?.adminName || stored || "Admin",
+          totalStudents: totalStudents,
+          totalFaculty: totalFaculty,
+          highRiskStudents: highRisk,
         });
       } catch (err) {
+        console.error("Admin Dashboard API Error:", err);
         setInfo({
           instituteName: "Campus++ Institute",
-          adminName: stored ?? "Admin",
+          adminName: stored || "Admin",
           totalStudents: 0,
           totalFaculty: 0,
           highRiskStudents: 0,
@@ -308,14 +319,17 @@ function StatCard({ title, value, icon: Icon, color, sub, alert }: any) {
         <div style={{ backgroundColor: color }} className={`p-3 rounded-2xl border-[3px] border-black text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]`}>
           <Icon size={24} strokeWidth={3} />
         </div>
-        <p className="text-[11px] font-black text-black/40 dark:text-white/40 uppercase tracking-[0.2em]">{title}</p>
+        <p className="text-[11px] font-black text-black/40 dark:text-white/40 uppercase tracking-[0.2em] truncate">{title}</p>
       </div>
-      <div className="flex items-baseline gap-2">
-        <h3 className={`text-5xl font-black tracking-tighter ${alert ? 'text-[#FF6AC1]' : 'text-black dark:text-white'}`}>
+      <div className="flex items-baseline gap-2 w-full">
+        <h3 
+          title={String(value || 0)}
+          className={`font-black tracking-tighter truncate w-full ${String(value || 0).length > 6 ? 'text-4xl' : 'text-5xl'} ${alert ? 'text-[#FF6AC1]' : 'text-black dark:text-white'}`}
+        >
           {value || 0}
         </h3>
       </div>
-      <p className="text-[11px] font-black text-black uppercase dark:text-white tracking-widest mt-2 opacity-40">{sub}</p>
+      <p className="text-[11px] font-black text-black uppercase dark:text-white tracking-widest mt-2 opacity-40 truncate">{sub}</p>
     </div>
   );
 }
