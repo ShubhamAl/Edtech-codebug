@@ -20,7 +20,18 @@ interface Resource {
   _id: string;
   title: string;
   description: string;
+  subject: string;
   fileUrl: string;
+  downloadUrl: string;
+  originalFileName: string;
+  resourceType: string;
+  mimeType: string;
+  fileSizeLabel: string;
+  fileSizeBytes: number;
+  isPdf: boolean;
+  isBroadcast: boolean;
+  facultyName: string;
+  facultyEmail: string;
   createdAt: string;
 }
 
@@ -75,7 +86,8 @@ export default function CommunicationsPage() {
   const fetchResources = useCallback(async () => {
     try {
       setResourcesLoading(true);
-      const res: any = await apiRequest("/faculty-resources", { method: "GET" });
+      // ✅ Correct endpoint: /student/resources
+      const res: any = await apiRequest("/student/resources", { method: "GET" });
       const list = res.data ?? res.resources ?? res ?? [];
       setResources(Array.isArray(list) ? list : []);
     } catch (err: any) {
@@ -158,9 +170,19 @@ export default function CommunicationsPage() {
     }
   };
 
-  const handleDownloadResource = (id: string) => {
-    // Open the download link directly - the backend redirects to Cloudinary
-    window.open(`https://campuspp-f7qx.onrender.com/api/faculty-resources/${id}/download`, "_blank");
+  // ✅ Use downloadUrl directly from resource — no backend redirect needed
+  const handleDownloadResource = (resource: Resource) => {
+    const url = resource.downloadUrl || resource.fileUrl;
+    if (!url) return;
+    // Force download using a hidden anchor
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = resource.originalFileName || resource.title || "download";
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const formatDate = (dateStr: string) => {
@@ -459,24 +481,43 @@ export default function CommunicationsPage() {
                       {resources.map((res) => (
                         <div key={res._id} className={`flex flex-col p-6 rounded-[2rem] bg-white dark:bg-zinc-900 border-[3px] border-black transition-all ${hoverEffect} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] group`}>
                           <div className="flex items-start justify-between mb-4">
-                            <div className="p-3 bg-[#63D2F3] rounded-xl border-2 border-black">
+                            <div className={`p-3 rounded-xl border-2 border-black ${res.isPdf ? "bg-[#FF6AC1]" : "bg-[#63D2F3]"}`}>
                               <FileText size={20} className="text-black" strokeWidth={3} />
                             </div>
-                            <button
-                              onClick={() => handleDeleteResource(res._id)}
-                              className="p-2 text-black/20 hover:text-[#FF6AC1] transition-colors"
-                              title="Delete Resource"
-                            >
-                              <Trash2 size={18} strokeWidth={3} />
-                            </button>
+                            <div className="flex items-center gap-2">
+                              {res.isPdf && (
+                                <span className="text-[9px] font-black uppercase px-2 py-1 bg-[#FF6AC1] text-black border-2 border-black rounded-lg">PDF</span>
+                              )}
+                              {res.resourceType === "image" && (
+                                <span className="text-[9px] font-black uppercase px-2 py-1 bg-[#63D2F3] text-black border-2 border-black rounded-lg">IMG</span>
+                              )}
+                              <button
+                                onClick={() => handleDeleteResource(res._id)}
+                                className="p-2 text-black/20 hover:text-[#FF6AC1] transition-colors"
+                                title="Delete Resource"
+                              >
+                                <Trash2 size={18} strokeWidth={3} />
+                              </button>
+                            </div>
                           </div>
-                          <h4 className="font-black text-lg uppercase tracking-tight text-black dark:text-white leading-tight mb-2 truncate" title={res.title}>{res.title}</h4>
-                          <p className="text-[11px] font-bold text-black/50 dark:text-white/50 line-clamp-2 mb-6 flex-1">
+
+                          <h4 className="font-black text-lg uppercase tracking-tight text-black dark:text-white leading-tight mb-1 truncate" title={res.title}>{res.title}</h4>
+
+                          {res.subject && (
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#8E97FD] mb-2">{res.subject}</span>
+                          )}
+
+                          <p className="text-[11px] font-bold text-black/50 dark:text-white/50 line-clamp-2 mb-3 flex-1">
                             {res.description || "No description provided."}
                           </p>
-                          
+
+                          <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-black/40 dark:text-white/40 mb-4">
+                            <span>👤 {res.facultyName || "Unknown"}</span>
+                            <span>{res.fileSizeLabel || "—"}</span>
+                          </div>
+
                           <button
-                            onClick={() => handleDownloadResource(res._id)}
+                            onClick={() => handleDownloadResource(res)}
                             className={`w-full py-3 rounded-xl border-2 border-black bg-white dark:bg-zinc-800 text-black dark:text-white font-black text-[10px] uppercase tracking-widest hover:bg-[#FFD600] hover:text-black transition-colors flex items-center justify-center gap-2`}
                           >
                             <Download size={14} /> Download
