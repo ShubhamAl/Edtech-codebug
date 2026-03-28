@@ -11,7 +11,8 @@ import {
   LogOut,
   UserCircle,
   ShieldCheck,
-  Zap
+  Zap,
+  Megaphone,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "@/lib/auth";
@@ -29,6 +30,7 @@ export default function FacultySidebar({ isOpen, setIsOpen }: SidebarProps) {
     { name: "Upload Data", href: "/faculty/upload", icon: FileUp },
     { name: "Student Directory", href: "/faculty/students", icon: Users },
     { name: "Faculty Profile", href: "/faculty/profile", icon: UserCircle },
+    { name: "Comms & Resources", href: "/faculty/communications", icon: Megaphone },
   ];
 
   // Neubrutalism Style Variables
