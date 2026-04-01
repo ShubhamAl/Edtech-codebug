@@ -88,10 +88,11 @@ export default function RegistrationPipeline() {
       header: true,
       skipEmptyLines: true,
       complete: (results: any) => {
-        const formatted: Student[] = results.data.map((row: any) => ({
+        const currentYear = new Date().getFullYear();
+        const formatted: Student[] = results.data.map((row: any, index: number) => ({
           email: row.email || row.Email || "",
           name: row.name || row.Name || "",
-          studentId: `STU-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+          studentId: `STU${currentYear}${Math.floor(Math.random() * 1000) + 1000 + index}`,
           dateOfJoin: row.dateOfJoin || row.DateOfJoin || new Date().toISOString().split('T')[0],
           classes: row.classes || row.Class || "SYIT",
           Course: row.Course || row.course || "Computer Science",
@@ -99,7 +100,7 @@ export default function RegistrationPipeline() {
           phoneNo: row.phoneNo || row.PhoneNo || "",
           parentsNo: row.parentsNo || row.ParentsNo || "",
           parents: row.parents || row.Parents || "",
-          password: row.password || "student123",
+          password: row.password || Math.random().toString(36).slice(-8).toUpperCase(),
           instituteName: instituteName,
           instituteId: instituteId
         }));
@@ -267,7 +268,7 @@ export default function RegistrationPipeline() {
                             </td>
                             <td className="py-6 px-4">
                               <p className="text-[#8E97FD] text-xs font-black uppercase tracking-widest leading-none mb-1">{s.Course || "N/A"}</p>
-                              <p className="text-black/40 dark:text-white/40 text-[10px] font-black uppercase tracking-widest">{s.classes || "N/A"}</p>
+                              <p className="text-black/40 dark:text-white/40 text-[10px] font-black uppercase tracking-widest">{s.studentId}</p>
                               {s.language && <p className="text-[9px] font-black text-[#A3E635] uppercase mt-1">Lang: {s.language}</p>}
                             </td>
                             <td className="py-6 px-4">
