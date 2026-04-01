@@ -257,7 +257,7 @@ export default function AdminFacultyPage() {
                   </div>
                   <div>
                     <h3 className="font-black text-black dark:text-white text-2xl uppercase tracking-tighter leading-none mb-1">{f.name}</h3>
-                    <p className="text-[11px] font-black text-black/40 dark:text-white/40 flex items-center gap-2 uppercase tracking-widest">
+                    <p className="text-[11px] font-black text-black/40 dark:text-white/40 flex items-center gap-2 uppercase tracking-widest truncate max-w-[200px]">
                       <Mail size={12} strokeWidth={3} /> {f.email}
                     </p>
                   </div>
@@ -318,44 +318,72 @@ export default function AdminFacultyPage() {
                     exit={{ opacity: 0, height: 0 }}
                     className="mt-8 pt-8 border-t-[3px] border-black/10 dark:border-white/10 space-y-6"
                   >
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-black/40 dark:text-white/40">Assigned Cohort Entities</h4>
-                        <div className="h-1 flex-grow mx-4 border-b border-black/5" />
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-black/40 dark:text-white/40">Cohort Management</h4>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-[#A3E635] animate-pulse" />
+                            <p className="text-[10px] font-black text-[#A3E635] uppercase tracking-widest">Active Surveillance</p>
+                          </div>
+                        </div>
+                        {(facultyStudentsMap[f._id]?.length ?? 0) > 0 && (
+                          <button
+                            onClick={async () => {
+                              if (confirm("DANGER: This will de-assign ALL students from this faculty. Proceed?")) {
+                                try {
+                                  await apiRequest(`/faculty/admin/faculty/${f._id}/assign`, {
+                                    method: "POST",
+                                    body: JSON.stringify({ studentIds: [] }),
+                                  });
+                                  addToast("Successfully cleared all cohort links.", "success");
+                                  setFacultyStudentsMap(prev => ({ ...prev, [f._id]: [] }));
+                                  await fetchFaculty();
+                                } catch (err: any) {
+                                  addToast(err.message || "Wipe failed.", "error");
+                                }
+                              }
+                            }}
+                            className={`px-4 py-2 bg-black text-white rounded-xl text-[9px] font-black uppercase tracking-tighter hover:bg-[#FF6AC1] transition-colors ${blackBorder}`}
+                          >
+                            Purge All Links
+                          </button>
+                        )}
                       </div>
 
                       {fetchingStudents === f._id ? (
-                        <div className="flex items-center gap-3 py-4 opacity-50">
-                          <Loader2 size={16} className="animate-spin" />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Accessing student directory...</span>
+                        <div className="flex items-center gap-3 py-6 bg-[#F9F4F1] dark:bg-zinc-800/50 rounded-2xl border-2 border-dashed border-black/10">
+                          <Loader2 size={16} className="animate-spin ml-6" />
+                          <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Syncing local node with directory...</span>
                         </div>
                       ) : (facultyStudentsMap[f._id]?.length ?? 0) === 0 ? (
-                        <div className="py-4 text-[10px] font-black uppercase tracking-widest opacity-20">No students linked to this node.</div>
+                        <div className="py-8 text-center bg-[#F9F4F1] dark:bg-zinc-800/50 rounded-2xl border-2 border-dashed border-black/10">
+                          <p className="text-[10px] font-black uppercase tracking-widest opacity-20">No entities linked to this unit.</p>
+                        </div>
                       ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {facultyStudentsMap[f._id].map(s => (
-                            <div key={s._id} className={`group/item flex items-center justify-between p-3 bg-[#F9F4F1] dark:bg-zinc-800/50 rounded-xl border-2 border-black/5 dark:border-white/5 hover:border-black transition-all`}>
+                            <div key={s._id} className={`group/item flex items-center justify-between p-3.5 bg-white dark:bg-zinc-800 rounded-2xl border-[3px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all`}>
                               <div className="flex items-center gap-3 truncate">
-                                <div className="h-8 w-8 rounded-lg bg-white dark:bg-zinc-800 flex items-center justify-center shrink-0 border border-black/10">
-                                  <Users size={14} className="text-[#8E97FD]" />
+                                <div className="h-9 w-9 rounded-xl bg-[#63D2F3] border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                  <Users size={16} className="text-black" strokeWidth={3} />
                                 </div>
                                 <div className="truncate">
-                                  <p className="text-[11px] font-black uppercase truncate text-black dark:text-white">{s.name}</p>
+                                  <p className="text-[12px] font-black uppercase truncate text-black dark:text-white leading-tight">{s.name}</p>
                                   <p className="text-[9px] font-bold opacity-40 uppercase tracking-tighter truncate">{s.studentId}</p>
                                 </div>
                               </div>
                               <button
                                 onClick={async (e) => {
                                   e.stopPropagation();
-                                  if (confirm(`Remove ${s.name} from this faculty unit?`)) {
+                                  if (confirm(`Remove ${s.name} from ${f.name}'s cohort?`)) {
                                     try {
                                       const remainingIds = facultyStudentsMap[f._id].filter(st => st._id !== s._id).map(st => st._id);
                                       await apiRequest(`/faculty/admin/faculty/${f._id}/assign`, {
                                         method: "POST",
                                         body: JSON.stringify({ studentIds: remainingIds }),
                                       });
-                                      addToast("Student unlinked successfully.", "success");
-                                      // Refresh only this map
+                                      addToast(`Unlinked ${s.name}.`, "success");
                                       const res: any = await apiRequest(`/faculty/admin/faculty/${f._id}/students`, { method: "GET" });
                                       setFacultyStudentsMap(prev => ({ ...prev, [f._id]: res.data || [] }));
                                       await fetchFaculty();
@@ -364,9 +392,9 @@ export default function AdminFacultyPage() {
                                     }
                                   }
                                 }}
-                                className="p-1.5 rounded-lg opacity-0 group-hover/item:opacity-100 bg-[#FF6AC1] text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+                                className="p-2 rounded-xl bg-[#FF6AC1] text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-[#FFD600] transition-colors"
                               >
-                                <X size={12} strokeWidth={4} />
+                                <X size={14} strokeWidth={4} />
                               </button>
                             </div>
                           ))}
