@@ -35,6 +35,7 @@ export default function RegistrationPipeline() {
   const [isReady, setIsReady] = useState(false);
   const [responseMessage, setResponseMessage] = useState<any>(null);
   const [token, setToken] = useState("");
+  const [allKnownStudents, setAllKnownStudents] = useState<Student[]>([]);
 
   // Neubrutalism Style Variables
   const blackBorder = "border-[3px] border-black dark:border-white";
@@ -69,6 +70,7 @@ export default function RegistrationPipeline() {
       const dataArray = result.data || result.students || [];
       if (Array.isArray(dataArray)) {
         setStudents(dataArray);
+        setAllKnownStudents(dataArray);
         setFileName("Live Server Cloud");
         setIsReady(true);
       }
@@ -91,8 +93,8 @@ export default function RegistrationPipeline() {
         const currentYear = new Date().getFullYear();
         const baseIdPrefix = `STU${currentYear}`;
         
-        // Find the maximum existing numeric suffix in the current student list
-        const maxExistingId = students
+        // Find the absolute maximum ID from both fetched and currently pending students
+        const maxExistingId = [...allKnownStudents, ...students]
           .filter(s => s.studentId.startsWith(baseIdPrefix))
           .map(s => parseInt(s.studentId.replace(baseIdPrefix, ""), 10))
           .filter(n => !isNaN(n))
