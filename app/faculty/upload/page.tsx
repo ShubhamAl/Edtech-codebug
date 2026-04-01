@@ -92,7 +92,7 @@ export default function RegistrationPipeline() {
         const formatted: Student[] = results.data.map((row: any, index: number) => ({
           email: row.email || row.Email || "",
           name: row.name || row.Name || "",
-          studentId: `STU${currentYear}${Math.floor(Math.random() * 1000) + 1000 + index}`,
+          studentId: `STU${currentYear}${(index + 1).toString().padStart(4, '0')}`,
           dateOfJoin: row.dateOfJoin || row.DateOfJoin || new Date().toISOString().split('T')[0],
           classes: row.classes || row.Class || "SYIT",
           Course: row.Course || row.course || "Computer Science",
