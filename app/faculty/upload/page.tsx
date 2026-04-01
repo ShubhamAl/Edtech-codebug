@@ -89,21 +89,33 @@ export default function RegistrationPipeline() {
       skipEmptyLines: true,
       complete: (results: any) => {
         const currentYear = new Date().getFullYear();
-        const formatted: Student[] = results.data.map((row: any, index: number) => ({
-          email: row.email || row.Email || "",
-          name: row.name || row.Name || "",
-          studentId: `STU${currentYear}${(index + 1).toString().padStart(4, '0')}`,
-          dateOfJoin: row.dateOfJoin || row.DateOfJoin || new Date().toISOString().split('T')[0],
-          classes: row.classes || row.Class || "SYIT",
-          Course: row.Course || row.course || "Computer Science",
-          language: row.language || row.Language || "English",
-          phoneNo: row.phoneNo || row.PhoneNo || "",
-          parentsNo: row.parentsNo || row.ParentsNo || "",
-          parents: row.parents || row.Parents || "",
-          password: row.password || Math.random().toString(36).slice(-8).toUpperCase(),
-          instituteName: instituteName,
-          instituteId: instituteId
-        }));
+        const baseIdPrefix = `STU${currentYear}`;
+        
+        // Find the maximum existing numeric suffix in the current student list
+        const maxExistingId = students
+          .filter(s => s.studentId.startsWith(baseIdPrefix))
+          .map(s => parseInt(s.studentId.replace(baseIdPrefix, ""), 10))
+          .filter(n => !isNaN(n))
+          .reduce((max, val) => Math.max(max, val), 0);
+
+        const formatted: Student[] = results.data.map((row: any, index: number) => {
+          const nextSerial = maxExistingId + index + 1;
+          return {
+            email: row.email || row.Email || "",
+            name: row.name || row.Name || "",
+            studentId: `${baseIdPrefix}${nextSerial.toString().padStart(3, '0')}`,
+            dateOfJoin: row.dateOfJoin || row.DateOfJoin || new Date().toISOString().split('T')[0],
+            classes: row.classes || row.Class || "SYIT",
+            Course: row.Course || row.course || "Computer Science",
+            language: row.language || row.Language || "English",
+            phoneNo: row.phoneNo || row.PhoneNo || "",
+            parentsNo: row.parentsNo || row.ParentsNo || "",
+            parents: row.parents || row.Parents || "",
+            password: row.password || `${(row.email || row.Email || "STUDENT").split('@')[0].replace(/[^a-zA-Z0-9]/g, '').toUpperCase()}${currentYear}`,
+            instituteName: instituteName,
+            instituteId: instituteId
+          };
+        });
         setStudents(formatted);
         setIsReady(true);
         setLoading(false);
