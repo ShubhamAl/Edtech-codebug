@@ -24,6 +24,9 @@ export default function RegistrationPipeline() {
     language?: string;
     instituteName?: string;
     instituteId?: string;
+    phoneNo?: string;
+    parentsNo?: string;
+    parents?: string;
   }
 
   const [loading, setLoading] = useState(false);
@@ -88,10 +91,14 @@ export default function RegistrationPipeline() {
         const formatted: Student[] = results.data.map((row: any) => ({
           email: row.email || row.Email || "",
           name: row.name || row.Name || "",
-          studentId: row.studentId || row.StudentId || `STU${Math.floor(Math.random() * 10000)}`,
+          studentId: `STU-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
           dateOfJoin: row.dateOfJoin || row.DateOfJoin || new Date().toISOString().split('T')[0],
           classes: row.classes || row.Class || "SYIT",
           Course: row.Course || row.course || "Computer Science",
+          language: row.language || row.Language || "English",
+          phoneNo: row.phoneNo || row.PhoneNo || "",
+          parentsNo: row.parentsNo || row.ParentsNo || "",
+          parents: row.parents || row.Parents || "",
           password: row.password || "student123",
           instituteName: instituteName,
           instituteId: instituteId
@@ -247,6 +254,7 @@ export default function RegistrationPipeline() {
                         <tr className="text-[11px] font-black text-black/40 dark:text-white/40 uppercase tracking-[0.25em]">
                           <th className="pb-6 px-4">Student Profile</th>
                           <th className="pb-6 px-4">Cohort / Program</th>
+                          <th className="pb-6 px-4">Guardian / Contact</th>
                           <th className="pb-6 px-4">Auth Key</th>
                         </tr>
                       </thead>
@@ -260,6 +268,14 @@ export default function RegistrationPipeline() {
                             <td className="py-6 px-4">
                               <p className="text-[#8E97FD] text-xs font-black uppercase tracking-widest leading-none mb-1">{s.Course || "N/A"}</p>
                               <p className="text-black/40 dark:text-white/40 text-[10px] font-black uppercase tracking-widest">{s.classes || "N/A"}</p>
+                              {s.language && <p className="text-[9px] font-black text-[#A3E635] uppercase mt-1">Lang: {s.language}</p>}
+                            </td>
+                            <td className="py-6 px-4">
+                              <p className="font-black text-xs uppercase tracking-tight leading-none mb-1 text-black dark:text-white">{s.parents || "No Guardian"}</p>
+                              <div className="flex flex-col gap-1">
+                                <p className="text-[9px] text-black/40 dark:text-white/40 font-black uppercase tracking-widest">S: {s.phoneNo || "N/A"}</p>
+                                <p className="text-[9px] text-black/40 dark:text-white/40 font-black uppercase tracking-widest">P: {s.parentsNo || "N/A"}</p>
+                              </div>
                             </td>
                             <td className="py-6 px-4">
                               <div className={`inline-flex items-center gap-3 bg-[#F9F4F1] dark:bg-zinc-800 px-4 py-2 rounded-xl ${blackBorder}`}>

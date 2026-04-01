@@ -15,6 +15,9 @@ type Student = {
   attendance: string;
   classes: string;
   marks: string;
+  phoneNo?: string;
+  parentsNo?: string;
+  parents?: string;
   performance: {
     score: number;
     riskLevel: "High" | "Medium" | "Low";
