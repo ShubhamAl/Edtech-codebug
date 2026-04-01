@@ -23,6 +23,7 @@ type Faculty = {
   name: string;
   email: string;
   studentCount?: number;
+  assignedStudentCount?: number;
   students?: string[];
 };
 
@@ -42,6 +43,8 @@ export default function AdminFacultyPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [facultyStudentsMap, setFacultyStudentsMap] = useState<{ [fid: string]: Student[] }>({});
+  const [fetchingStudents, setFetchingStudents] = useState<string | null>(null);
 
   // Neubrutalism Style Variables
   const blackBorder = "border-[3px] border-black dark:border-white";
@@ -264,20 +267,42 @@ export default function AdminFacultyPage() {
                   <div className={`flex items-center gap-2 bg-[#F9F4F1] dark:bg-zinc-800 px-5 py-2.5 rounded-xl border-2 border-black dark:border-white`}>
                     <Users size={16} className="text-[#8E97FD]" strokeWidth={3} />
                     <span className="text-[11px] font-black text-black dark:text-white uppercase tracking-widest">
-                      {f.studentCount ?? f.students?.length ?? 0} Students
+                      {facultyStudentsMap[f._id] ? facultyStudentsMap[f._id].length : (f.assignedStudentCount ?? f.studentCount ?? f.students?.length ?? 0)} Students
                     </span>
                   </div>
                   <button
                     onClick={() => {
                       setAssignFaculty(f);
-                      setSelectedStudentIds([]);
+                      // Pre-load existing assignments from the map if it exists
+                      const existing = facultyStudentsMap[f._id]?.map(s => s._id) || [];
+                      setSelectedStudentIds(existing);
                     }}
                     className={`bg-[#A3E635] text-black px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest ${blackBorder} shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all`}
                   >
                     Assign
                   </button>
                   <button
-                    onClick={() => setExpandedFaculty(expandedFaculty === f._id ? null : f._id)}
+                    onClick={async () => {
+                      const fid = f._id;
+                      if (expandedFaculty === fid) {
+                        setExpandedFaculty(null);
+                      } else {
+                        setExpandedFaculty(fid);
+                        // Fetch their students if not already cached
+                        if (!facultyStudentsMap[fid]) {
+                          try {
+                            setFetchingStudents(fid);
+                            const res: any = await apiRequest(`/faculty/admin/faculty/${fid}/students`, { method: "GET" });
+                            const data = res?.data || res || [];
+                            setFacultyStudentsMap(prev => ({ ...prev, [fid]: Array.isArray(data) ? data : [] }));
+                          } catch (err) {
+                            console.error("Failed to fetch faculty students:", err);
+                          } finally {
+                            setFetchingStudents(null);
+                          }
+                        }
+                      }
+                    }}
                     className={`p-2.5 rounded-xl bg-white dark:bg-zinc-800 ${blackBorder} text-black dark:text-white hover:bg-[#FFD600] transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]`}
                   >
                     {expandedFaculty === f._id ? <ChevronUp size={18} strokeWidth={3} /> : <ChevronDown size={18} strokeWidth={3} />}
@@ -291,8 +316,64 @@ export default function AdminFacultyPage() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-8 pt-8 border-t-[3px] border-black/10 dark:border-white/10"
+                    className="mt-8 pt-8 border-t-[3px] border-black/10 dark:border-white/10 space-y-6"
                   >
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-black/40 dark:text-white/40">Assigned Cohort Entities</h4>
+                        <div className="h-1 flex-grow mx-4 border-b border-black/5" />
+                      </div>
+
+                      {fetchingStudents === f._id ? (
+                        <div className="flex items-center gap-3 py-4 opacity-50">
+                          <Loader2 size={16} className="animate-spin" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Accessing student directory...</span>
+                        </div>
+                      ) : (facultyStudentsMap[f._id]?.length ?? 0) === 0 ? (
+                        <div className="py-4 text-[10px] font-black uppercase tracking-widest opacity-20">No students linked to this node.</div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {facultyStudentsMap[f._id].map(s => (
+                            <div key={s._id} className={`group/item flex items-center justify-between p-3 bg-[#F9F4F1] dark:bg-zinc-800/50 rounded-xl border-2 border-black/5 dark:border-white/5 hover:border-black transition-all`}>
+                              <div className="flex items-center gap-3 truncate">
+                                <div className="h-8 w-8 rounded-lg bg-white dark:bg-zinc-800 flex items-center justify-center shrink-0 border border-black/10">
+                                  <Users size={14} className="text-[#8E97FD]" />
+                                </div>
+                                <div className="truncate">
+                                  <p className="text-[11px] font-black uppercase truncate text-black dark:text-white">{s.name}</p>
+                                  <p className="text-[9px] font-bold opacity-40 uppercase tracking-tighter truncate">{s.studentId}</p>
+                                </div>
+                              </div>
+                              <button
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  if (confirm(`Remove ${s.name} from this faculty unit?`)) {
+                                    try {
+                                      const remainingIds = facultyStudentsMap[f._id].filter(st => st._id !== s._id).map(st => st._id);
+                                      await apiRequest(`/faculty/admin/faculty/${f._id}/assign`, {
+                                        method: "POST",
+                                        body: JSON.stringify({ studentIds: remainingIds }),
+                                      });
+                                      addToast("Student unlinked successfully.", "success");
+                                      // Refresh only this map
+                                      const res: any = await apiRequest(`/faculty/admin/faculty/${f._id}/students`, { method: "GET" });
+                                      setFacultyStudentsMap(prev => ({ ...prev, [f._id]: res.data || [] }));
+                                      await fetchFaculty();
+                                    } catch (err: any) {
+                                      addToast(err.message || "Removal failed.", "error");
+                                    }
+                                  }
+                                }}
+                                className="p-1.5 rounded-lg opacity-0 group-hover/item:opacity-100 bg-[#FF6AC1] text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+                              >
+                                <X size={12} strokeWidth={4} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
                         <div className="h-2 w-2 rounded-full bg-[#8E97FD] border border-black" />
